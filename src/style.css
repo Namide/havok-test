@@ -3,6 +3,10 @@
   background-color: #242424;
 }
 
+html {
+  overflow: hidden;
+}
+
 body {
   margin: 0;
 }
