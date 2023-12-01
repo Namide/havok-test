@@ -1,0 +1,13 @@
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  background-color: #242424;
+}
+
+body {
+  margin: 0;
+}
+
+canvas {
+  width: 100vw;
+  height: 100vh;
+}
