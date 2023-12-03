@@ -1,6 +1,10 @@
+import { createEventEmitter } from "../components/createEventEmitter"
+
+/**
+ * Event emitter
+ */
 export default () => {
 
-  const fctList: { routeName: string, callback: () => void }[] = []
   const routes = [
     {
       title: 'Damien Doussaud',
@@ -16,39 +20,26 @@ export default () => {
     }
   ] as const
 
-  const on = (
-    routeName: typeof routes[number]['name'],
-    callback: typeof fctList[number]['callback']
-  ) => {
-    fctList.push({
-      routeName,
-      callback
-    })
-  }
-
+  const { on, dispatch } = createEventEmitter<{ name: typeof routes[number]['name'], callback:
+  () => void }>()
+  
   const changePage = ({
     path,
     changePath = true,
     // oldPath = document.location.pathname || '/'
   }: { path: string, changePath?: boolean, oldPath?: string }) => {
 
-    const route = _pathToRoute(path)
+    const route = pathToRoute(path)
     
     if (changePath) {
       history.pushState({}, route.title, route.path)
-      _dispatch(route)
+      dispatch(route.name)
     }
   }
 
-  function _pathToRoute (path: string) {
+  function pathToRoute (path: string) {
     return routes.find((route) => route.regex.test(path)) ||
       routes.find((route) => route.name === '404') as typeof routes[number]
-  }
-
-  function _dispatch (route: typeof routes[number]) {
-    fctList
-      .filter(item => item.routeName === route.name)
-      .forEach(item => item.callback())
   }
 
   window.addEventListener('popstate', () => {

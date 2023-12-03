@@ -1,6 +1,6 @@
 import Router from './router/Router'
 import './style.css'
-import App from './views/App'
+import App from './pages/App'
 
 const router = Router()
 

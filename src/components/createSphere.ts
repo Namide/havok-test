@@ -2,12 +2,12 @@ import * as THREE from 'three';
 import { Rapier, getRAPIER } from "../physic/rapier";
 import { euler, quaternion } from '../constants';
 
-export default async function createCube ({
+export default async function createSphere ({
   world,
   posX = 0, posY = 0, posZ = 0,
-  sizeX = Math.random() / 4 + 0.05, sizeY = Math.random() / 4 + 0.05, sizeZ = Math.random() / 4 + 0.05,
+  size = 0.25,
   rotX = Math.random(), rotY = Math.random(), rotZ = Math.random()
-}: { world: InstanceType<Rapier['World']>, posX?: number, posY?: number, posZ?: number, sizeX?: number, sizeY?: number, sizeZ?: number, rotX?: number, rotY?: number, rotZ?: number }) {
+}: { world: InstanceType<Rapier['World']>, posX?: number, posY?: number, posZ?: number, size?: number, sizeY?: number, sizeZ?: number, rotX?: number, rotY?: number, rotZ?: number }) {
 
   const RAPIER = await getRAPIER()
 
@@ -19,13 +19,13 @@ export default async function createCube ({
     .setTranslation(posX, posY, posZ)
     .setRotation({ w: quaternion.w, x: quaternion.x, y: quaternion.y, z: quaternion.z })
   const rigidBody = world.createRigidBody(cubeBodyDesc);
-  const cubeColliderDesc = RAPIER.ColliderDesc.cuboid(sizeX / 2, sizeY / 2, sizeZ / 2);
+  const cubeColliderDesc = RAPIER.ColliderDesc.ball(size);
   world.createRigidBody(cubeBodyDesc);
   world.createCollider(cubeColliderDesc, rigidBody);
 
   // Render
   const material = new THREE.MeshNormalMaterial();
-  const geometry = new THREE.BoxGeometry( sizeX, sizeY, sizeZ );
+  const geometry = new THREE.SphereGeometry( size );
   const mesh = new THREE.Mesh( geometry, material );
 
   // Update
