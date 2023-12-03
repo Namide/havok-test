@@ -7,6 +7,12 @@ export function createMouseEvent ({
   camera
 }: { screenSize: { width: number, height: number }, scene: THREE.Scene, camera: THREE.Camera }) {
 
+  const raycaster = new THREE.Raycaster();
+  const mouse = new THREE.Vector2();
+
+  let meshOver: THREE.Object3D | undefined
+
+
   const { on, off, dispatch } = createEventEmitter<
     { name: 'mouseover', callback: (data: THREE.Object3D) => void } |
     { name: 'mouseout', callback: (data: THREE.Object3D) => void } |
@@ -28,6 +34,7 @@ export function createMouseEvent ({
     { name: THREE.Object3D, callback: (data: THREE.Object3D) => void }
   >()
 
+
   on('mouseover', (obj: THREE.Object3D) => {
     dispatchOver(obj, obj)
   })
@@ -40,13 +47,10 @@ export function createMouseEvent ({
     dispatchClick(obj, obj)
   })
 
-  const mouse = new THREE.Vector2();
-  let meshOver: THREE.Object3D | undefined
-    
-  const raycaster = new THREE.Raycaster();
 
   window.addEventListener('mousemove', mouseMove)
   window.addEventListener('click', click)
+
 
   function click () {
     raycaster.setFromCamera(mouse, camera);
@@ -60,17 +64,12 @@ export function createMouseEvent ({
     mouse.x = (event.clientX / screenSize.width) * 2 - 1;
     mouse.y = -(event.clientY / screenSize.height) * 2 + 1;
   }
- 
-  function update () {
-    testHover()
-  }
 
   function testHover () {
     raycaster.setFromCamera(mouse, camera);
     const object3D = raycaster.intersectObject(scene, true)?.[0]?.object;
 
     if (object3D !== meshOver) {
-
       if (meshOver) {
         dispatch('mouseout', meshOver);
       }
@@ -80,10 +79,13 @@ export function createMouseEvent ({
         dispatch('mouseover', meshOver);
       }
     }
+
+    return object3D
   }
 
+
   return {
-    update,
+    testHover,
     onOver,
     offOver,
     onOut,

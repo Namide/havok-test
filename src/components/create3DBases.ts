@@ -6,6 +6,7 @@ import { createMouseEvent } from './createMouseEvent';
 export async function create3DBases () {
 
   const RAPIER = await getRAPIER()
+
   const screenSize = {
     width: window.innerWidth,
     height: window.innerHeight
@@ -13,9 +14,8 @@ export async function create3DBases () {
 
   const gravity = new THREE.Vector3(0.0, -9.81, 0.0);
   const world = new RAPIER.World(gravity);
-
   const scene = new THREE.Scene();
-  
+
   const camera = new THREE.PerspectiveCamera( 70, screenSize.width / screenSize.height, 1, 1000 );
   camera.position.z = 10;
   camera.position.y = 3
@@ -27,7 +27,6 @@ export async function create3DBases () {
   });
   const controls = new OrbitControls( camera, renderer.domElement )
   controls.update();
-
   renderer.setSize( screenSize.width, screenSize.height, false );
 
   const mouseEvent = createMouseEvent({ screenSize, scene, camera })
@@ -35,12 +34,9 @@ export async function create3DBases () {
   window.addEventListener('resize', resize)
 
   function update () {
-
-    mouseEvent.update()
-    
+    mouseEvent.testHover()
     controls.update();
     world.step();
-
     renderer.render( scene, camera );
   }
 
@@ -59,6 +55,5 @@ export async function create3DBases () {
     renderer,
     world,
     scene,
-    
   }
 }

@@ -1,5 +1,3 @@
-
-
 export function createEventEmitter<GlobalEventDef extends { name: string | object, callback: (data: any) => void }> () {
   
   let list: GlobalEventDef[] = []
