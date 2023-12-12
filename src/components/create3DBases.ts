@@ -29,7 +29,7 @@ export async function create3DBases () {
   controls.update();
   renderer.setSize( screenSize.width, screenSize.height, false );
 
-  const mouseEvent = createMouseEvent({ screenSize, scene, camera })
+  const mouseEvent = createMouseEvent({ screenSize, scene, camera, canvas: renderer.domElement })
 
   window.addEventListener('resize', resize)
 

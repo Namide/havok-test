@@ -2,11 +2,12 @@ import createGround from '../components/createGround';
 import createCube from '../components/createCube';
 import { create3DBases } from '../components/create3DBases';
 import createSphere from '../components/createSphere';
+import createCard from '../components/createCard';
 
 // Rapier example https://github.com/viridia/demo-rapier-three/tree/main
 export default async () => {
 
-  const { renderer, scene, world, update: update3DBases, onOver, onOut, onClick } = await create3DBases()
+  const { renderer, scene, world, update: update3DBases, onOver, onOut, onClick, onDown, onUp } = await create3DBases()
 
   const updates: (() => void)[] = []
 
@@ -34,10 +35,25 @@ export default async () => {
       console.log('click:', target)
     })
     // grabbing
+
+    // onDown(mesh, (target) => {
+    //   console.log('down:', target)
+    // })
+    
+    // onUp(undefined, () => {
+    //   console.log('up:')
+    // })
   }
 
+  {
+    const { mesh: card, update } = await createCard({ world, posX: Math.random() * 2 - 1, posY: Math.random() * 4 + 2, posZ: Math.random() * 2 - 1, onDown, onUp })
+    scene.add( card );
+    updates.push(update)
+  }
+
+
   // Cube
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 10; i++) {
     const { mesh, update } = await createCube({ world, posX: Math.random() * 2 - 1, posY: Math.random() * 4 + 2, posZ: Math.random() * 2 - 1 })
     scene.add( mesh );
     updates.push(update)

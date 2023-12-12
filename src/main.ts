@@ -12,5 +12,3 @@ App()
 router.changePage({
   path: document.location.pathname
 })
-
-

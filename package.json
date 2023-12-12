@@ -17,6 +17,7 @@
   "dependencies": {
     "@dimforge/rapier3d": "^0.11.2",
     "@types/three": "^0.159.0",
-    "three": "^0.159.0"
+    "three": "^0.159.0",
+    "twon": "^0.1.1"
   }
 }

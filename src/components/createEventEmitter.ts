@@ -1,4 +1,13 @@
-export function createEventEmitter<GlobalEventDef extends { name: string | object, callback: (data: any) => void }> () {
+export type GlobalEvent = { name: string | object | undefined, callback: (data: any) => void }
+
+export type On = <EvendDef extends GlobalEvent>(
+  name: EvendDef['name'],
+  callback: EvendDef['callback']
+) => void
+
+export type Off = On
+
+export function createEventEmitter<GlobalEventDef extends GlobalEvent> () {
   
   let list: GlobalEventDef[] = []
   

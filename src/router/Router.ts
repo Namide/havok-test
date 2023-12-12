@@ -30,11 +30,13 @@ export default () => {
   }: { path: string, changePath?: boolean, oldPath?: string }) => {
 
     const route = pathToRoute(path)
-    
+
     if (changePath) {
       history.pushState({}, route.title, route.path)
       dispatch(route.name)
     }
+
+    document.title = route.title
   }
 
   function pathToRoute (path: string) {
