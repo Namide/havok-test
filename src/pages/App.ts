@@ -51,7 +51,8 @@ export default async () => {
     });
   }
 
-  {
+  // Cards
+  for (let i = 0; i < 5; i++) {
     const { mesh: card, update } = await createCard({
       world,
       posX: Math.random() * 2 - 1,

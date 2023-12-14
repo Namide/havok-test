@@ -1,7 +1,7 @@
 import * as THREE from "three";
-import { Tween } from "twon";
-import { euler, quaternion } from "../constants";
-import { HP_WorldId } from "../havok/HavokPhysics";
+import { DynamicTween, easeInOutCubic } from "twon";
+import { euler, matrix4, quaternion } from "../constants";
+import { ActivationState, HP_WorldId, MotionType, Quaternion, Vector3 } from "../havok/HavokPhysics";
 // import { Rapier, getRAPIER } from "../physic/rapier";
 import type { create3DBases } from "./create3DBases";
 import { getHavok } from "../physic/havok";
@@ -13,7 +13,7 @@ export default async function createCard({
   posZ = 0,
   sizeX = 3 / 2,
   sizeY = 1,
-  sizeZ = 0.05,
+  sizeZ = 0.01,
   rotX = Math.random(),
   rotY = Math.random(),
   rotZ = Math.random(),
@@ -70,13 +70,13 @@ export default async function createCard({
   ]);
   havok.HP_Body_SetMassProperties(body, [
     /* center of mass */ [0, 0, 0],
-    /* Mass */ 0.1,
-    /* Inertia for mass of 1*/ [0.001, 0.001, 0.001],
+    /* Mass */ 1,
+    /* Inertia for mass of 1*/ [1, 1, 1],
     /* Inertia Orientation */ [0, 0, 0, 1],
   ]);
-  havok.HP_World_AddBody(world, body, false);
   havok.HP_Body_SetMotionType(body, havok.MotionType.DYNAMIC);
-  const offset = havok.HP_Body_GetWorldTransformOffset(body)[1];
+  havok.HP_World_AddBody(world, body, false);
+  // const offset = havok.HP_Body_GetWorldTransformOffset(body)[1];
 
 
 
@@ -84,35 +84,132 @@ export default async function createCard({
   const material = new THREE.MeshNormalMaterial();
   const geometry = new THREE.BoxGeometry(sizeX, sizeY, sizeZ);
   const mesh = new THREE.Mesh(geometry, material);
-  mesh.matrixAutoUpdate = false
+  // mesh.matrixAutoUpdate = false
 
 
 
+  // constraint
+  // https://github.com/BabylonJS/Babylon.js/blob/7ed1a73bc34a136e77dcaf8b34fb0578cc25bc4b/packages/dev/core/src/Physics/v2/Plugins/havokPlugin.ts#L1395
+  const parent = havok.HP_Body_Create()[1];
+  havok.HP_Body_SetMotionType(parent, havok.MotionType.STATIC);
+  havok.HP_World_AddBody(world, parent, false);
+  havok.HP_Body_SetShape(
+    parent,
+    havok.HP_Shape_CreateBox([0, 0, 0], [0, 0, 0, 1], [1, 1, 1])[1],
+  );
+  havok.HP_Body_SetQTransform(parent, [
+    [Math.random() * 5, 4, Math.random() * 5],
+    [0, 0, 0, 1],
+  ]);
+  const constraint = havok.HP_Constraint_Create()[1]
+  havok.HP_Constraint_SetParentBody(constraint, parent);
+  havok.HP_Constraint_SetChildBody(constraint, body)
+  havok.HP_Constraint_SetAnchorInChild(
+    constraint,
+    [0, 0, 0],
+    [1, 0, 0],
+    [0, 1, 0]
+  )
+  havok.HP_Constraint_SetAxisMode(constraint, havok.ConstraintAxis.LINEAR_DISTANCE, havok.ConstraintAxisLimitMode.LIMITED);
+  havok.HP_Constraint_SetAxisMinLimit(constraint, havok.ConstraintAxis.LINEAR_DISTANCE, 0.25);
+  havok.HP_Constraint_SetAxisMaxLimit(constraint, havok.ConstraintAxis.LINEAR_DISTANCE, 0.25);
+
+
+
+
+
+  // let isDragging = false
+  // let dynamicTween: DynamicTween<number[]> | undefined
+  // let flatQTransform: number[] | undefined
   onDown(mesh, (target) => {
-    console.log("down:", target);
+    // console.log("down:", target);
+    // isDragging = true
+    
+    // havok.HP_Body_SetTargetQTransform(body, [
+    //   /* translation */ [0, 4, 0],
+    //   /* rotation */ [0, 0, 0, 1]
+    // ])
+
+    // havok.HP_Body_SetQTransform (body, [
+    //   /* translation */ [0, 4, 0],
+    //   /* rotation */ [0, 0, 0, 1]
+    // ])
+
+    // matrix4.identity()
+    // matrix4.setPosition(new THREE.Vector3(0, 4, 0))
+
+    // havok.HP_Body_SetMotionType(body, havok.MotionType.STATIC)
+    // const qTransform = havok.HP_Body_GetQTransform(body)[1]
+    // const qTransformTarget = [
+    //   /* translation */ [ 0, 4, 0 ],
+    //   /* rotation */ [0, 0, 0, 1]
+    // ];
+    // flatQTransform = [...qTransform[0], ...qTransform[1]]
+
+
+    // const constraint = havok.HP_Constraint_Create()[1]
+    // havok.HP_Body_SetQTransform(constraint, qTransform)
+    // havok.HP_Constraint_SetChildBody(constraint, body)
+
+
+    // // const flatTransform = [...qTransform[0], ...qTransform[1]]
+    // dynamicTween = new DynamicTween(
+    //   flatQTransform,
+    //   { duration: 3000, ease: easeInOutCubic }
+    // )
+    //   .on('update', (transform: number[]) => {
+    //     // flatQTransform = transform
+    //     havok.HP_Body_SetQTransform (
+    //       constraint, [
+    //         /* translation */ transform.filter((_, index) => index < 3) as Vector3,
+    //         /* rotation */ transform.filter((_, index) => index > 2) as Quaternion
+    //       ]
+    //     )
+    //     console.log(transform)
+    //     // console.log(transform)
+    //   })
+    //   .on('end', () => {
+    //   })
+    //   .to([...qTransformTarget[0], ...qTransformTarget[1]])
+
   });
 
   onUp(undefined, () => {
-    console.log("up:");
+    // console.log('end')
+    // isDragging = false
+    // dynamicTween?.dispose()
+    // flatQTransform = undefined
+    // dynamicTween = undefined
+    // havok.HP_Body_SetMotionType(body, havok.MotionType.DYNAMIC)
+    // console.log("up:");
   });
+
 
   // Update
   const update = () => {
+    // if(isDragging && flatQTransform) {
+    //   // console.log(flatQTransform)
+      
+    // }
 
-    const bodyBuffer = havok.HP_World_GetBodyBuffer(world)[1];
-    const transformBuffer = new Float32Array(
-      havok.HEAPU8.buffer /* havok.HEAPU8.buffer */,
-      bodyBuffer + offset,
-      16,
-    );
+    const [ position, rotation ] = havok.HP_Body_GetQTransform(body)[1]
+    mesh.position.set(...position)
+    mesh.quaternion.set(...rotation)
+
+    // const bodyBuffer = havok.HP_World_GetBodyBuffer(world)[1];
+    // const transformBuffer = new Float32Array(
+    //   havok.HEAPU8.buffer /* havok.HEAPU8.buffer */,
+    //   bodyBuffer + offset,
+    //   16,
+    // );
 
     // mesh.matrix.fromArray(transformBuffer);
-    for (let mi = 0; mi < 15; mi++) {
-      if ((mi & 3) !== 3) {
-        mesh.matrix.elements[mi] = transformBuffer[mi];
-      }
-    }
-    mesh.matrix.elements[15] = 1.0;
+    // for (let mi = 0; mi < 15; mi++) {
+    //   if ((mi & 3) !== 3) {
+    //     mesh.matrix.elements[mi] = transformBuffer[mi];
+    //   }
+    // }
+    // mesh.matrix.elements[15] = 1.0;
 
 
     // rigidBody.setAdditionalMass(1000, true);

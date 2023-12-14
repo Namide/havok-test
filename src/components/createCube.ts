@@ -69,30 +69,18 @@ export default async function createCube({
   ]);
   havok.HP_World_AddBody(world, body, false);
   havok.HP_Body_SetMotionType(body, havok.MotionType.DYNAMIC);
-  const offset = havok.HP_Body_GetWorldTransformOffset(body)[1];
 
   // Render
   const material = new THREE.MeshNormalMaterial();
   const geometry = new THREE.BoxGeometry(sizeX, sizeY, sizeZ);
   const mesh = new THREE.Mesh(geometry, material);
-  mesh.matrixAutoUpdate = false
 
   // Update
   const update = () => {
-    const bodyBuffer = havok.HP_World_GetBodyBuffer(world)[1];
-    const transformBuffer = new Float32Array(
-      havok.HEAPU8.buffer /* havok.HEAPU8.buffer */,
-      bodyBuffer + offset,
-      16,
-    );
-
-    // mesh.matrix.fromArray(transformBuffer);
-    for (let mi = 0; mi < 15; mi++) {
-      if ((mi & 3) !== 3) {
-        mesh.matrix.elements[mi] = transformBuffer[mi];
-      }
-    }
-    mesh.matrix.elements[15] = 1.0;
+    
+    const [ position, rotation ] = havok.HP_Body_GetQTransform(body)[1]
+    mesh.position.set(...position)
+    mesh.quaternion.set(...rotation)
 
 
     // mesh.rotation.setFromRotationMatrix(mesh.matrix);
