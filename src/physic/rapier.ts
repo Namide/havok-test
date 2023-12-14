@@ -1,10 +1,10 @@
-export type Rapier = typeof import('@dimforge/rapier3d')
+export type Rapier = typeof import("@dimforge/rapier3d");
 
-let RAPIER: Rapier 
+let RAPIER: Rapier;
 
-export async function getRAPIER () {
+export async function getRAPIER() {
   if (!RAPIER) {
-    RAPIER = await import('@dimforge/rapier3d')
+    RAPIER = await import("@dimforge/rapier3d");
   }
-  return RAPIER
-} 
+  return RAPIER;
+}

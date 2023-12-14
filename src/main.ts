@@ -1,14 +1,14 @@
-import Router from './router/Router'
-import './style.css'
-import App from './pages/App'
+import App from "./pages/App";
+import Router from "./router/Router";
+import "./style.css";
 
-const router = Router()
+const router = Router();
 
-router.on('landing', () => console.log('landing'))
-router.on('404', () => console.log('404'))
+router.on("landing", () => console.log("landing"));
+router.on("404", () => console.log("404"));
 
-App()
+App();
 
 router.changePage({
-  path: document.location.pathname
-})
+  path: document.location.pathname,
+});
