@@ -11,6 +11,7 @@ export default async () => {
     scene,
     world,
     update: update3DBases,
+    render,
     onOver,
     onOut,
     onClick,
@@ -64,7 +65,7 @@ export default async () => {
   // }
 
   // Cube
-  for (let i = 0; i < 1; i++) {
+  for (let i = 0; i < 20; i++) {
     const { mesh, update } = await createCube({
       world,
       posX: Math.random() * 2 - 1,
@@ -78,6 +79,10 @@ export default async () => {
   renderer.setAnimationLoop(tick);
 
   function tick(/* time: number */) {
+
+    // required if controls.enableDamping or controls.autoRotate are set to true
+    update3DBases();
+
     // Ste the simulation forward.
 
     // Get and print the rigid-body's position.
@@ -85,7 +90,6 @@ export default async () => {
       update();
     }
 
-    // required if controls.enableDamping or controls.autoRotate are set to true
-    update3DBases();
+    render()
   }
 };

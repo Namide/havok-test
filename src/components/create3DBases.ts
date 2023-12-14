@@ -46,6 +46,9 @@ export async function create3DBases() {
     mouseEvent.testHover();
     controls.update();
     updatePhysic(delta);
+  }
+
+  function render() {
     renderer.render(scene, camera);
   }
 
@@ -60,6 +63,7 @@ export async function create3DBases() {
   return {
     ...mouseEvent,
     update,
+    render,
     camera,
     renderer,
     world,
