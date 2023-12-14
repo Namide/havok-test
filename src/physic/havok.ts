@@ -1,9 +1,16 @@
-import HavokPhysics, { MotionType, type HavokPhysicsWithBindings } from "../havok/HavokPhysics";
+import HavokPhysics, {
+  type HavokPhysicsWithBindings,
+  MotionType,
+} from "../havok/HavokPhysics";
 
 let havok: HavokPhysicsWithBindings & {
   HEAPU8: Uint8Array;
-  MotionType: { STATIC: MotionType.STATIC, DYNAMIC: MotionType.DYNAMIC, KINEMATIC: MotionType.KINEMATIC }
-}
+  MotionType: {
+    STATIC: MotionType.STATIC;
+    DYNAMIC: MotionType.DYNAMIC;
+    KINEMATIC: MotionType.KINEMATIC;
+  };
+};
 
 export async function getHavok() {
   if (!havok) {

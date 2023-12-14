@@ -317,7 +317,10 @@ var HavokPhysics = (() => {
         wasmBinaryFile = locateFile(wasmBinaryFile);
       }
     } else {
-      wasmBinaryFile = new URL("HavokPhysics.wasm?init", import.meta.url).toString();
+      wasmBinaryFile = new URL(
+        "HavokPhysics.wasm?init",
+        import.meta.url,
+      ).toString();
     }
     function getBinary(file) {
       try {
