@@ -1,7 +1,7 @@
-import * as THREE from "three";
 import { createEventEmitter } from "./createEventEmitter";
+import * as THREE from "three";
 
-export function createMouseEvent({
+export async function createMouseEvent({
   screenSize,
   scene,
   camera,
@@ -17,7 +17,7 @@ export function createMouseEvent({
 
   let meshOver: THREE.Object3D | undefined;
 
-  const { on, off, dispatch } = createEventEmitter<
+  const { on, dispatch } = createEventEmitter<
     | { name: "mouseover"; callback: (data: THREE.Object3D) => void }
     | { name: "mouseout"; callback: (data: THREE.Object3D) => void }
     | { name: "click"; callback: (data: THREE.Object3D) => void }

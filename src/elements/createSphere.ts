@@ -1,64 +1,22 @@
+import { HP_WorldId, Vector3 } from "../physic/havok/HavokPhysics";
+import { createCollisionSphere } from "../physic/createCollisionSphere";
 import * as THREE from "three";
-import { euler, quaternion } from "../constants";
-import { getHavok } from "../physic/getHavok";
-import { HP_WorldId } from "../physic/havok/HavokPhysics";
-// import { Rapier, getRAPIER } from "physic/rapier";
 
 export default async function createSphere({
   world,
-  posX = 0,
-  posY = 0,
-  posZ = 0,
-  size = Math.random() / 4 + 0.1,
-  rotX = Math.random(),
-  rotY = Math.random(),
-  rotZ = Math.random(),
+  position,
+  size,
 }: {
-  world: HP_WorldId; // InstanceType<Rapier["World"]>;
-  posX?: number;
-  posY?: number;
-  posZ?: number;
-  size?: number;
-  sizeY?: number;
-  sizeZ?: number;
-  rotX?: number;
-  rotY?: number;
-  rotZ?: number;
+  world: HP_WorldId;
+  position: Vector3;
+  size: number;
 }) {
-  // Rotation
-  quaternion.setFromEuler(euler.set(rotX, rotY, rotZ), true);
-
-  // Rapier
-  // const RAPIER = await getRAPIER();
-  // const cubeBodyDesc = RAPIER.RigidBodyDesc.dynamic()
-  //   .setTranslation(posX, posY, posZ)
-  //   .setRotation({
-  //     w: quaternion.w,
-  //     x: quaternion.x,
-  //     y: quaternion.y,
-  //     z: quaternion.z,
-  //   });
-  // const rigidBody = world.createRigidBody(cubeBodyDesc);
-  // const cubeColliderDesc = RAPIER.ColliderDesc.ball(size);
-  // world.createRigidBody(cubeBodyDesc);
-  // world.createCollider(cubeColliderDesc, rigidBody);
-
   // Havok
-  const havok = await getHavok();
-  const body = havok.HP_Body_Create()[1];
-  havok.HP_Body_SetShape(body, havok.HP_Shape_CreateSphere([0, 0, 0], size)[1]);
-  havok.HP_Body_SetQTransform(body, [
-    [posX, posY, posZ],
-    [quaternion.x, quaternion.y, quaternion.z, quaternion.w],
-  ]);
-  havok.HP_Body_SetMassProperties(body, [
-    /* center of mass */ [0, 0, 0],
-    /* Mass */ 1,
-    /* Inertia for mass of 1*/ [0.001, 0.001, 0.001],
-    /* Inertia Orientation */ [0, 0, 0, 1],
-  ]);
-  havok.HP_World_AddBody(world, body, false);
-  havok.HP_Body_SetMotionType(body, havok.MotionType.DYNAMIC);
+  const { getTransform } = await createCollisionSphere({
+    world,
+    position,
+    size,
+  });
 
   // Render
   const material = new THREE.MeshNormalMaterial();
@@ -67,20 +25,9 @@ export default async function createSphere({
 
   // Update
   const update = () => {
-    const [position, rotation] = havok.HP_Body_GetQTransform(body)[1];
+    const { position, quaternion } = getTransform();
     mesh.position.set(...position);
-    mesh.quaternion.set(...rotation);
-
-    // mesh.rotation.setFromRotationMatrix(mesh.matrix);
-    // mesh.position.setFromMatrixPosition(mesh.matrix);
-    // mesh.scale.setFromMatrixScale(mesh.matrix);
-
-    // // Update Rapier
-    // const { x: posX, y: posY, z: posZ } = rigidBody.translation();
-    // const { x: rotX, y: rotY, z: rotZ, w: rotW } = rigidBody.rotation();
-    // mesh.position.set(posX, posY, posZ);
-    // quaternion.set(rotX, rotY, rotZ, rotW);
-    // mesh.rotation.setFromQuaternion(quaternion);
+    mesh.quaternion.set(...quaternion);
   };
 
   return {

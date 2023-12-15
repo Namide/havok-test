@@ -1,77 +1,32 @@
-import * as THREE from "three";
-import { DynamicTween, easeInOutCubic } from "twon";
-import { euler, matrix4, quaternion } from "../constants";
+// import { DynamicTween, easeInOutCubic } from "twon";
 import { getHavok } from "../physic/getHavok";
-import {
-  ActivationState,
-  HP_WorldId,
-  MotionType,
-  Quaternion,
-  Vector3,
-} from "../physic/havok/HavokPhysics";
-// import { Rapier, getRAPIER } from "../physic/rapier";
+import { HP_WorldId, Quaternion, Vector3 } from "../physic/havok/HavokPhysics";
 import type { create3DBases } from "../render/create3DBases";
+import * as THREE from "three";
 
 export default async function createCard({
   world,
-  posX = 0,
-  posY = 0,
-  posZ = 0,
-  sizeX = 3 / 2,
-  sizeY = 1,
-  sizeZ = 0.01,
-  rotX = Math.random(),
-  rotY = Math.random(),
-  rotZ = Math.random(),
+  position,
+  rotation,
+  size,
   onDown,
   onUp,
 }: {
-  world: HP_WorldId; // InstanceType<Rapier["World"]>;
-  posX?: number;
-  posY?: number;
-  posZ?: number;
-  sizeX?: number;
-  sizeY?: number;
-  sizeZ?: number;
-  rotX?: number;
-  rotY?: number;
-  rotZ?: number;
+  world: HP_WorldId;
+  position: Vector3;
+  rotation: Quaternion;
+  size: Vector3;
   onDown: Awaited<ReturnType<typeof create3DBases>>["onDown"];
   onUp: Awaited<ReturnType<typeof create3DBases>>["onUp"];
 }) {
-  // Rotation
-  quaternion.setFromEuler(euler.set(rotX, rotY, rotZ), true);
-
-  // // Rapier
-  // const RAPIER = await getRAPIER();
-  // const cubeBodyDesc = RAPIER.RigidBodyDesc.dynamic()
-  //   .setTranslation(posX, posY, posZ)
-  //   .setRotation({
-  //     w: quaternion.w,
-  //     x: quaternion.x,
-  //     y: quaternion.y,
-  //     z: quaternion.z,
-  //   });
-  // const rigidBody = world.createRigidBody(cubeBodyDesc);
-  // const cubeColliderDesc = RAPIER.ColliderDesc.cuboid(
-  //   sizeX / 2,
-  //   sizeY / 2,
-  //   sizeZ / 2,
-  // );
-  // world.createRigidBody(cubeBodyDesc);
-  // world.createCollider(cubeColliderDesc, rigidBody);
-
   // Havok
   const havok = await getHavok();
   const body = havok.HP_Body_Create()[1];
   havok.HP_Body_SetShape(
     body,
-    havok.HP_Shape_CreateBox([0, 0, 0], [0, 0, 0, 1], [sizeX, sizeY, sizeZ])[1],
+    havok.HP_Shape_CreateBox([0, 0, 0], [0, 0, 0, 1], size)[1],
   );
-  havok.HP_Body_SetQTransform(body, [
-    [posX, posY, posZ],
-    [quaternion.x, quaternion.y, quaternion.z, quaternion.w],
-  ]);
+  havok.HP_Body_SetQTransform(body, [position, rotation]);
   havok.HP_Body_SetMassProperties(body, [
     /* center of mass */ [0, 0, 0],
     /* Mass */ 1,
@@ -80,13 +35,11 @@ export default async function createCard({
   ]);
   havok.HP_Body_SetMotionType(body, havok.MotionType.DYNAMIC);
   havok.HP_World_AddBody(world, body, false);
-  // const offset = havok.HP_Body_GetWorldTransformOffset(body)[1];
 
   // Render
   const material = new THREE.MeshNormalMaterial();
-  const geometry = new THREE.BoxGeometry(sizeX, sizeY, sizeZ);
+  const geometry = new THREE.BoxGeometry(...size);
   const mesh = new THREE.Mesh(geometry, material);
-  // mesh.matrixAutoUpdate = false
 
   // constraint
   // https://github.com/BabylonJS/Babylon.js/blob/7ed1a73bc34a136e77dcaf8b34fb0578cc25bc4b/packages/dev/core/src/Physics/v2/Plugins/havokPlugin.ts#L1395
@@ -97,10 +50,7 @@ export default async function createCard({
     parent,
     havok.HP_Shape_CreateBox([0, 0, 0], [0, 0, 0, 1], [1, 1, 1])[1],
   );
-  havok.HP_Body_SetQTransform(parent, [
-    [posX, posY, posZ],
-    [0, 0, 0, 1],
-  ]);
+  havok.HP_Body_SetQTransform(parent, [position, [0, 0, 0, 1]]);
   const constraint = havok.HP_Constraint_Create()[1];
   havok.HP_Constraint_SetCollisionsEnabled(constraint, 0);
   havok.HP_Constraint_SetParentBody(constraint, parent);
@@ -130,7 +80,7 @@ export default async function createCard({
   // let isDragging = false
   // let dynamicTween: DynamicTween<number[]> | undefined
   // let flatQTransform: number[] | undefined
-  onDown(mesh, (target) => {
+  onDown(mesh, () => {
     // console.log("down:", target);
     // isDragging = true
     // havok.HP_Body_SetTargetQTransform(body, [
@@ -200,7 +150,7 @@ export default async function createCard({
     havok.HP_Body_SetQTransform(parent, [
       [
         Math.cos(arc + Date.now() / 1000) * dist,
-        posY,
+        position[1],
         Math.sin(arc + Date.now() / 1000) * dist,
       ],
       [0, 0, 0, 1],

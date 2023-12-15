@@ -1,24 +1,19 @@
 import { getHavok } from "./getHavok";
-import { HP_WorldId, Quaternion, Vector3 } from "./havok/HavokPhysics";
+import { HP_WorldId, Vector3 } from "./havok/HavokPhysics";
 
-export const createCollisionBox = async ({
+export const createCollisionSphere = async ({
   world,
   position,
-  rotation,
   size,
 }: {
   world: HP_WorldId;
   position: Vector3;
-  rotation: Quaternion;
-  size: Vector3;
+  size: number;
 }) => {
   const havok = await getHavok();
   const body = havok.HP_Body_Create()[1];
-  havok.HP_Body_SetShape(
-    body,
-    havok.HP_Shape_CreateBox([0, 0, 0], [0, 0, 0, 1], size)[1],
-  );
-  havok.HP_Body_SetQTransform(body, [position, rotation]);
+  havok.HP_Body_SetShape(body, havok.HP_Shape_CreateSphere([0, 0, 0], size)[1]);
+  havok.HP_Body_SetQTransform(body, [position, [0, 0, 0, 1]]);
   havok.HP_Body_SetMassProperties(body, [
     /* center of mass */ [0, 0, 0],
     /* Mass */ 1,

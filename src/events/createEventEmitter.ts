@@ -39,8 +39,6 @@ export function createEventEmitter<GlobalEventDef extends GlobalEvent>() {
     name: EvendDef["name"],
     data?: Parameters<EvendDef["callback"]>[0],
   ) {
-    // console.log(data)
-
     for (const item of list.filter((item) => item.name === name)) {
       item.callback.call(null, data as Parameters<EvendDef["callback"]>[0]);
     }

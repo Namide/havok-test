@@ -10,9 +10,7 @@ export async function create3DBases() {
     width: window.innerWidth,
     height: window.innerHeight,
   };
-
   const scene = new THREE.Scene();
-
   const camera = new THREE.PerspectiveCamera(
     70,
     screenSize.width / screenSize.height,
@@ -32,7 +30,7 @@ export async function create3DBases() {
   controls.update();
   renderer.setSize(screenSize.width, screenSize.height, false);
 
-  const mouseEvent = createMouseEvent({
+  const mouseEvent = await createMouseEvent({
     screenSize,
     scene,
     camera,

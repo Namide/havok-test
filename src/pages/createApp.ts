@@ -1,7 +1,9 @@
+import { euler, quaternion } from "../constants";
 import createCard from "../elements/createCard";
 import createCube from "../elements/createCube";
 import createGround from "../elements/createGround";
 import createSphere from "../elements/createSphere";
+import { Quaternion } from "../physic/havok/HavokPhysics";
 import { create3DBases } from "../render/create3DBases";
 
 // Rapier example https://github.com/viridia/demo-rapier-three/tree/main
@@ -21,17 +23,37 @@ export const createApp = async () => {
 
   const updates: (() => void)[] = [];
 
+  const getRandomRotation = () =>
+    quaternion
+      .setFromEuler(
+        euler.set(
+          Math.random() * 2 * Math.PI,
+          Math.random() * 2 * Math.PI,
+          Math.random() * 2 * Math.PI,
+        ),
+        true,
+      )
+      .toArray() as Quaternion;
+
   // Ground
-  const { mesh: groundMesh } = await createGround({ world });
+  const { mesh: groundMesh } = await createGround({
+    world,
+    size: [20, 0.2, 20],
+    position: [0, 0, 0],
+    rotation: [0, 0, 0, 1],
+  });
   scene.add(groundMesh);
 
   // Sphere
   for (let i = 0; i < 10; i++) {
     const { mesh, update } = await createSphere({
       world,
-      posX: Math.random() * 2 - 1,
-      posY: Math.random() * 4 + 2,
-      posZ: Math.random() * 2 - 1,
+      position: [
+        Math.random() * 2 - 1,
+        Math.random() * 4 + 2,
+        Math.random() * 2 - 1,
+      ],
+      size: Math.random() / 10 + 0.1,
     });
     scene.add(mesh);
     updates.push(update);
@@ -55,9 +77,13 @@ export const createApp = async () => {
   for (let i = 0; i < 5; i++) {
     const { mesh: card, update } = await createCard({
       world,
-      posX: Math.random() * 2 - 1,
-      posY: Math.random() * 4 + 2,
-      posZ: Math.random() * 2 - 1,
+      position: [
+        Math.random() * 2 - 1,
+        Math.random() * 4 + 2,
+        Math.random() * 2 - 1,
+      ],
+      rotation: [0, 0, 0, 1],
+      size: [3 / 2, 1, 0.01],
       onDown,
       onUp,
     });
@@ -69,9 +95,17 @@ export const createApp = async () => {
   for (let i = 0; i < 100; i++) {
     const { mesh, update } = await createCube({
       world,
-      posX: Math.random() * 2 - 1,
-      posY: Math.random() * 4 + 2,
-      posZ: Math.random() * 2 - 1,
+      position: [
+        Math.random() * 2 - 1,
+        Math.random() * 4 + 2,
+        Math.random() * 2 - 1,
+      ],
+      size: [
+        Math.random() / 4 + 0.05,
+        Math.random() / 4 + 0.05,
+        Math.random() / 4 + 0.05,
+      ],
+      rotation: getRandomRotation(),
     });
     scene.add(mesh);
     updates.push(update);
