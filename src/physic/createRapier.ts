@@ -1,4 +1,4 @@
-import { getRAPIER } from "../physic/rapier";
+import { getRAPIER } from "./getRapier";
 
 export async function createRapier() {
   const RAPIER = await getRAPIER();

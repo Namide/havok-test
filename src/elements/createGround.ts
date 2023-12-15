@@ -1,7 +1,7 @@
 import * as THREE from "three";
-import { HP_WorldId } from "../havok/HavokPhysics";
-import { getHavok } from "../physic/havok";
-import { Rapier, getRAPIER } from "../physic/rapier";
+import { getHavok } from "../physic/getHavok";
+import { HP_WorldId } from "../physic/havok/HavokPhysics";
+// import { Rapier, getRAPIER } from "../physic/getRapier";
 
 export default async function createGround({
   world,

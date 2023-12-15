@@ -1,6 +1,7 @@
 export type GlobalEvent = {
   name: string | object | undefined;
-  callback: (data: unknown) => void;
+  // biome-ignore lint/suspicious/noExplicitAny: parameter can be anything
+  callback: (data: any) => void;
 };
 
 export type On = <EvendDef extends GlobalEvent>(

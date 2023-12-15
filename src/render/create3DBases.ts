@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { createHavok } from "./createHavok";
-import { createMouseEvent } from "./createMouseEvent";
+import { createMouseEvent } from "../events/createMouseEvent";
+import { createHavok } from "../physic/createHavok";
 
 export async function create3DBases() {
   const { world, update: updatePhysic } = await createHavok();

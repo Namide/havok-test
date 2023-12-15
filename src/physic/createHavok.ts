@@ -1,4 +1,4 @@
-import { getHavok } from "../physic/havok";
+import { getHavok } from "./getHavok";
 
 // https://github.com/N8python/havokDemo
 export async function createHavok() {

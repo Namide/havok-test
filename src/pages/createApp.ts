@@ -1,11 +1,11 @@
-import { create3DBases } from "../components/create3DBases";
-import createCard from "../components/createCard";
-import createCube from "../components/createCube";
-import createGround from "../components/createGround";
-import createSphere from "../components/createSphere";
+import createCard from "../elements/createCard";
+import createCube from "../elements/createCube";
+import createGround from "../elements/createGround";
+import createSphere from "../elements/createSphere";
+import { create3DBases } from "../render/create3DBases";
 
 // Rapier example https://github.com/viridia/demo-rapier-three/tree/main
-export default async () => {
+export const createApp = async () => {
   const {
     renderer,
     scene,

@@ -1,9 +1,9 @@
-import { createEventEmitter } from "../components/createEventEmitter";
+import { createEventEmitter } from "../events/createEventEmitter";
 
 /**
  * Event emitter
  */
-export default () => {
+export const createRouter = () => {
   const routes = [
     {
       title: "Damien Doussaud",

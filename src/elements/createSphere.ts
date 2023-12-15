@@ -1,8 +1,8 @@
 import * as THREE from "three";
 import { euler, quaternion } from "../constants";
-import { getHavok } from "../physic/havok";
-import { HP_WorldId } from "../havok/HavokPhysics";
-// import { Rapier, getRAPIER } from "../physic/rapier";
+import { getHavok } from "../physic/getHavok";
+import { HP_WorldId } from "../physic/havok/HavokPhysics";
+// import { Rapier, getRAPIER } from "physic/rapier";
 
 export default async function createSphere({
   world,
@@ -25,7 +25,6 @@ export default async function createSphere({
   rotY?: number;
   rotZ?: number;
 }) {
-
   // Rotation
   quaternion.setFromEuler(euler.set(rotX, rotY, rotZ), true);
 
@@ -47,10 +46,7 @@ export default async function createSphere({
   // Havok
   const havok = await getHavok();
   const body = havok.HP_Body_Create()[1];
-  havok.HP_Body_SetShape(
-    body,
-    havok.HP_Shape_CreateSphere([0, 0, 0], size)[1],
-  );
+  havok.HP_Body_SetShape(body, havok.HP_Shape_CreateSphere([0, 0, 0], size)[1]);
   havok.HP_Body_SetQTransform(body, [
     [posX, posY, posZ],
     [quaternion.x, quaternion.y, quaternion.z, quaternion.w],
@@ -64,26 +60,21 @@ export default async function createSphere({
   havok.HP_World_AddBody(world, body, false);
   havok.HP_Body_SetMotionType(body, havok.MotionType.DYNAMIC);
 
-
   // Render
   const material = new THREE.MeshNormalMaterial();
   const geometry = new THREE.SphereGeometry(size);
   const mesh = new THREE.Mesh(geometry, material);
 
-  
   // Update
   const update = () => {
-    
-    const [ position, rotation ] = havok.HP_Body_GetQTransform(body)[1]
-    mesh.position.set(...position)
-    mesh.quaternion.set(...rotation)
-
+    const [position, rotation] = havok.HP_Body_GetQTransform(body)[1];
+    mesh.position.set(...position);
+    mesh.quaternion.set(...rotation);
 
     // mesh.rotation.setFromRotationMatrix(mesh.matrix);
     // mesh.position.setFromMatrixPosition(mesh.matrix);
     // mesh.scale.setFromMatrixScale(mesh.matrix);
 
-  
     // // Update Rapier
     // const { x: posX, y: posY, z: posZ } = rigidBody.translation();
     // const { x: rotX, y: rotY, z: rotZ, w: rotW } = rigidBody.rotation();

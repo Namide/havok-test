@@ -1,9 +1,9 @@
 import * as THREE from "three";
 import { euler, quaternion } from "../constants";
-import { HP_WorldId } from "../havok/HavokPhysics";
-// import { MotionType } from "../havok/HavokPhysics";
-// import { Rapier, getRAPIER } from "../physic/rapier";
-import { getHavok } from "../physic/havok";
+// import { MotionType } from "havok/HavokPhysics";
+// import { Rapier, getRAPIER } from "physic/rapier";
+import { getHavok } from "../physic/getHavok";
+import { HP_WorldId } from "../physic/havok/HavokPhysics";
 
 export default async function createCube({
   world,
@@ -77,11 +77,9 @@ export default async function createCube({
 
   // Update
   const update = () => {
-    
-    const [ position, rotation ] = havok.HP_Body_GetQTransform(body)[1]
-    mesh.position.set(...position)
-    mesh.quaternion.set(...rotation)
-
+    const [position, rotation] = havok.HP_Body_GetQTransform(body)[1];
+    mesh.position.set(...position);
+    mesh.quaternion.set(...rotation);
 
     // mesh.rotation.setFromRotationMatrix(mesh.matrix);
     // mesh.position.setFromMatrixPosition(mesh.matrix);
