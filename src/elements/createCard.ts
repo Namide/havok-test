@@ -1,4 +1,5 @@
 // import { DynamicTween, easeInOutCubic } from "twon";
+import { euler, quaternion } from "../constants";
 import { getHavok } from "../physic/getHavok";
 import { HP_WorldId, Quaternion, Vector3 } from "../physic/havok/HavokPhysics";
 import type { create3DBases } from "../render/create3DBases";
@@ -50,7 +51,8 @@ export default async function createCard({
     parent,
     havok.HP_Shape_CreateBox([0, 0, 0], [0, 0, 0, 1], [1, 1, 1])[1],
   );
-  havok.HP_Body_SetQTransform(parent, [position, [0, 0, 0, 1]]);
+  havok.HP_Body_SetQTransform(parent, [position, rotation]);
+
   const constraint = havok.HP_Constraint_Create()[1];
   havok.HP_Constraint_SetCollisionsEnabled(constraint, 0);
   havok.HP_Constraint_SetParentBody(constraint, parent);
@@ -63,18 +65,33 @@ export default async function createCard({
   );
   havok.HP_Constraint_SetAxisMode(
     constraint,
-    havok.ConstraintAxis.LINEAR_DISTANCE,
-    havok.ConstraintAxisLimitMode.LIMITED,
+    havok.ConstraintAxis.LINEAR_X,
+    havok.ConstraintAxisLimitMode.LOCKED,
   );
-  havok.HP_Constraint_SetAxisMinLimit(
+  havok.HP_Constraint_SetAxisMode(
     constraint,
-    havok.ConstraintAxis.LINEAR_DISTANCE,
-    0.25,
+    havok.ConstraintAxis.LINEAR_Y,
+    havok.ConstraintAxisLimitMode.LOCKED,
   );
-  havok.HP_Constraint_SetAxisMaxLimit(
+  havok.HP_Constraint_SetAxisMode(
     constraint,
-    havok.ConstraintAxis.LINEAR_DISTANCE,
-    0.25,
+    havok.ConstraintAxis.LINEAR_Z,
+    havok.ConstraintAxisLimitMode.LOCKED,
+  );
+  havok.HP_Constraint_SetAxisMode(
+    constraint,
+    havok.ConstraintAxis.ANGULAR_X,
+    havok.ConstraintAxisLimitMode.LOCKED,
+  );
+  havok.HP_Constraint_SetAxisMode(
+    constraint,
+    havok.ConstraintAxis.ANGULAR_Y,
+    havok.ConstraintAxisLimitMode.LOCKED,
+  );
+  havok.HP_Constraint_SetAxisMode(
+    constraint,
+    havok.ConstraintAxis.ANGULAR_Z,
+    havok.ConstraintAxisLimitMode.LOCKED,
   );
 
   // let isDragging = false
@@ -124,6 +141,9 @@ export default async function createCard({
     //   .to([...qTransformTarget[0], ...qTransformTarget[1]])
   });
 
+  const toTop = quaternion
+    .setFromEuler(euler.set(Math.PI / 2, 0, Math.PI / 2), true)
+    .toArray() as Quaternion;
   onUp(undefined, () => {
     // console.log('end')
     // isDragging = false
@@ -153,7 +173,7 @@ export default async function createCard({
         position[1],
         Math.sin(arc + Date.now() / 1000) * dist,
       ],
-      [0, 0, 0, 1],
+      toTop,
     ]);
 
     // const bodyBuffer = havok.HP_World_GetBodyBuffer(world)[1];

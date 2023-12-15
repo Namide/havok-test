@@ -82,7 +82,16 @@ export const createApp = async () => {
         Math.random() * 4 + 2,
         Math.random() * 2 - 1,
       ],
-      rotation: [0, 0, 0, 1],
+      rotation: quaternion
+        .setFromEuler(
+          euler.set(
+            Math.random() * 2 * Math.PI,
+            Math.random() * 2 * Math.PI,
+            Math.random() * 2 * Math.PI,
+          ),
+          true,
+        )
+        .toArray() as Quaternion,
       size: [3 / 2, 1, 0.01],
       onDown,
       onUp,
