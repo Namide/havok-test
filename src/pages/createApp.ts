@@ -1,5 +1,6 @@
 import { euler, quaternion } from "../constants";
 import createCard from "../elements/createCard";
+import createCardRotation from "../elements/createCardRotation";
 import createCube from "../elements/createCube";
 import createGround from "../elements/createGround";
 import createSphere from "../elements/createSphere";
@@ -19,6 +20,9 @@ export const createApp = async () => {
     onClick,
     onDown,
     onUp,
+    offUp,
+    onMove,
+    offMove,
   } = await create3DBases();
 
   const updates: (() => void)[] = [];
@@ -95,6 +99,8 @@ export const createApp = async () => {
       size: [3 / 2, 1, 0.01],
       onDown,
       onUp,
+      offUp,
+      scene,
     });
     scene.add(card);
     updates.push(update);

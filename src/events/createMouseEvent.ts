@@ -1,6 +1,8 @@
 import { createEventEmitter } from "./createEventEmitter";
 import * as THREE from "three";
 
+type MousePosition = { x: number; y: number };
+
 export async function createMouseEvent({
   screenSize,
   scene,
@@ -29,46 +31,52 @@ export async function createMouseEvent({
     on: onOver,
     off: offOver,
     dispatch: dispatchOver,
-  } = createEventEmitter<
-    | { name: THREE.Object3D; callback: (data: THREE.Object3D) => void }
-    | { name: THREE.Object3D; callback: (data: THREE.Object3D) => void }
-  >();
+  } = createEventEmitter<{
+    name: THREE.Object3D;
+    callback: (data: THREE.Object3D) => void;
+  }>();
 
   const {
     on: onOut,
     off: offOut,
     dispatch: dispatchOut,
-  } = createEventEmitter<
-    | { name: THREE.Object3D; callback: (data: THREE.Object3D) => void }
-    | { name: THREE.Object3D; callback: (data: THREE.Object3D) => void }
-  >();
+  } = createEventEmitter<{
+    name: THREE.Object3D;
+    callback: (data: THREE.Object3D) => void;
+  }>();
+
+  const {
+    on: onMove,
+    off: offMove,
+    dispatch: dispatchMove,
+  } = createEventEmitter<{
+    name: undefined;
+    callback: (data: MousePosition) => void;
+  }>();
 
   const {
     on: onClick,
     off: offClick,
     dispatch: dispatchClick,
-  } = createEventEmitter<
-    | { name: THREE.Object3D; callback: (data: THREE.Object3D) => void }
-    | { name: THREE.Object3D; callback: (data: THREE.Object3D) => void }
-  >();
+  } = createEventEmitter<{
+    name: THREE.Object3D;
+    callback: (data: THREE.Object3D) => void;
+  }>();
 
   const {
     on: onDown,
     off: offDown,
     dispatch: dispatchDown,
-  } = createEventEmitter<
-    | { name: THREE.Object3D; callback: (data: THREE.Object3D) => void }
-    | { name: THREE.Object3D; callback: (data: THREE.Object3D) => void }
-  >();
+  } = createEventEmitter<{
+    name: THREE.Object3D;
+    callback: (data: THREE.Object3D) => void;
+  }>();
 
   const {
     on: onUp,
     off: offUp,
     dispatch: dispatchUp,
-  } = createEventEmitter<
-    | { name: undefined; callback: () => void }
-    | { name: undefined; callback: () => void }
-  >();
+  } = createEventEmitter<{ name: undefined; callback: () => void }>();
 
   on("mouseover", (obj: THREE.Object3D) => {
     dispatchOver(obj, obj);
@@ -124,6 +132,7 @@ export async function createMouseEvent({
   function mouseMove(event: MouseEvent) {
     mouse.x = (event.clientX / screenSize.width) * 2 - 1;
     mouse.y = -(event.clientY / screenSize.height) * 2 + 1;
+    dispatchMove(undefined, mouse);
   }
 
   function testHover() {
@@ -156,5 +165,7 @@ export async function createMouseEvent({
     offDown,
     onUp,
     offUp,
+    onMove,
+    offMove,
   };
 }
