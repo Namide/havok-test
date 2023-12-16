@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+// import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { createMouseEvent } from "../events/createMouseEvent";
 import { createHavok } from "../physic/createHavok";
 
@@ -17,17 +17,17 @@ export async function create3DBases() {
     1,
     1000,
   );
-  camera.position.z = 10;
-  camera.position.y = 3;
+  camera.position.z = 5;
+  camera.position.y = 10;
   camera.lookAt(new THREE.Vector3(0, 1, 0));
 
   const renderer = new THREE.WebGLRenderer({
     antialias: true,
     canvas: document.querySelector("canvas") as HTMLCanvasElement,
   });
-  const controls = new OrbitControls(camera, renderer.domElement);
+  // const controls = new OrbitControls(camera, renderer.domElement);
   const clock = new THREE.Clock();
-  controls.update();
+  // controls.update();
   renderer.setSize(screenSize.width, screenSize.height, false);
 
   const mouseEvent = await createMouseEvent({
@@ -42,7 +42,7 @@ export async function create3DBases() {
   function update() {
     const delta = clock.getDelta();
     mouseEvent.testHover();
-    controls.update();
+    // controls.update();
     updatePhysic(delta);
   }
 

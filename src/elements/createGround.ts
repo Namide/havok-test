@@ -1,6 +1,7 @@
 import { getHavok } from "../physic/getHavok";
 import { HP_WorldId, Quaternion, Vector3 } from "../physic/havok/HavokPhysics";
 import * as THREE from "three";
+import { getCheckerTexture } from "../render/textures";
 
 export default async function createGround({
   world,
@@ -13,7 +14,10 @@ export default async function createGround({
   rotation: Quaternion;
   size: Vector3;
 }) {
-  const material = new THREE.MeshNormalMaterial();
+  const map = await getCheckerTexture();
+  const material = new THREE.MeshBasicMaterial({
+    map,
+  });
   const geometry = new THREE.BoxGeometry(...size);
   const mesh = new THREE.Mesh(geometry, material);
 

@@ -1,6 +1,7 @@
 import { HP_WorldId, Vector3 } from "../physic/havok/HavokPhysics";
 import { createCollisionSphere } from "../physic/createCollisionSphere";
 import * as THREE from "three";
+import { getCheckerTexture } from "../render/textures";
 
 export default async function createSphere({
   world,
@@ -19,7 +20,10 @@ export default async function createSphere({
   });
 
   // Render
-  const material = new THREE.MeshNormalMaterial();
+  const map = await getCheckerTexture();
+  const material = new THREE.MeshBasicMaterial({
+    map,
+  });
   const geometry = new THREE.SphereGeometry(size);
   const mesh = new THREE.Mesh(geometry, material);
 

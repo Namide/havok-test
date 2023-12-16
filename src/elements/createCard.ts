@@ -4,6 +4,7 @@ import { getHavok } from "../physic/getHavok";
 import { HP_WorldId, Quaternion, Vector3 } from "../physic/havok/HavokPhysics";
 import type { create3DBases } from "../render/create3DBases";
 import * as THREE from "three";
+import { getCheckerTexture } from "../render/textures";
 
 export default async function createCard({
   world,
@@ -38,7 +39,10 @@ export default async function createCard({
   havok.HP_World_AddBody(world, body, false);
 
   // Render
-  const material = new THREE.MeshNormalMaterial();
+  const map = await getCheckerTexture();
+  const material = new THREE.MeshBasicMaterial({
+    map,
+  });
   const geometry = new THREE.BoxGeometry(...size);
   const mesh = new THREE.Mesh(geometry, material);
 

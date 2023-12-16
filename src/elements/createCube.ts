@@ -1,6 +1,7 @@
 import { HP_WorldId, Quaternion, Vector3 } from "../physic/havok/HavokPhysics";
 import { createCollisionBox } from "../physic/createCollisionBox";
 import * as THREE from "three";
+import { getCheckerTexture } from "../render/textures";
 
 export default async function createCube({
   world,
@@ -21,7 +22,10 @@ export default async function createCube({
   });
 
   // Render
-  const material = new THREE.MeshNormalMaterial();
+  const map = await getCheckerTexture();
+  const material = new THREE.MeshBasicMaterial({
+    map,
+  });
   const geometry = new THREE.BoxGeometry(...size);
   const mesh = new THREE.Mesh(geometry, material);
 
