@@ -15,14 +15,7 @@ export const createApp = async () => {
     world,
     update: update3DBases,
     render,
-    onOver,
-    onOut,
-    onClick,
-    onDown,
-    onUp,
-    offUp,
-    onMove,
-    offMove,
+    mouseEvents,
   } = await create3DBases();
 
   const updates: (() => void)[] = [];
@@ -62,17 +55,17 @@ export const createApp = async () => {
     scene.add(mesh);
     updates.push(update);
 
-    onOver(mesh, (target) => {
+    mouseEvents.onOver(mesh, (target) => {
       renderer.domElement.style.cursor = "grab";
       console.log("over:", target);
     });
 
-    onOut(mesh, (target) => {
+    mouseEvents.onOut(mesh, (target) => {
       renderer.domElement.style.cursor = "auto";
       console.log("out:", target);
     });
 
-    onClick(mesh, (target) => {
+    mouseEvents.onClick(mesh, (target) => {
       console.log("click:", target);
     });
   }
@@ -97,9 +90,7 @@ export const createApp = async () => {
         )
         .toArray() as Quaternion,
       size: [3 / 2, 1, 0.01],
-      onDown,
-      onUp,
-      offUp,
+      mouseEvents,
       scene,
     });
     scene.add(card);

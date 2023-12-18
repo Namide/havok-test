@@ -1,6 +1,6 @@
 import * as THREE from "three";
 // import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { createMouseEvent } from "../events/createMouseEvent";
+import { createMouseEvents } from "../events/createMouseEvents";
 import { createHavok } from "../physic/createHavok";
 
 export async function create3DBases() {
@@ -30,7 +30,7 @@ export async function create3DBases() {
   // controls.update();
   renderer.setSize(screenSize.width, screenSize.height, false);
 
-  const mouseEvent = await createMouseEvent({
+  const mouseEvents = await createMouseEvents({
     screenSize,
     scene,
     camera,
@@ -41,7 +41,7 @@ export async function create3DBases() {
 
   function update() {
     const delta = clock.getDelta();
-    mouseEvent.testHover();
+    mouseEvents.testHover();
     // controls.update();
     updatePhysic(delta);
   }
@@ -59,7 +59,7 @@ export async function create3DBases() {
   }
 
   return {
-    ...mouseEvent,
+    mouseEvents,
     update,
     render,
     camera,

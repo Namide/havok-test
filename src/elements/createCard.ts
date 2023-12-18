@@ -6,15 +6,14 @@ import type { create3DBases } from "../render/create3DBases";
 import * as THREE from "three";
 import { getCheckerTexture } from "../render/textures";
 import { createDragElement } from "../physic/createDragElement";
+import { MouseEvents } from "../events/createMouseEvents";
 
 export default async function createCard({
   world,
   position,
   rotation,
   size,
-  onDown,
-  onUp,
-  offUp,
+  mouseEvents,
   scene,
 }: {
   world: HP_WorldId;
@@ -22,9 +21,7 @@ export default async function createCard({
   rotation: Quaternion;
   scene: THREE.Scene;
   size: Vector3;
-  onDown: Awaited<ReturnType<typeof create3DBases>>["onDown"];
-  onUp: Awaited<ReturnType<typeof create3DBases>>["onUp"];
-  offUp: Awaited<ReturnType<typeof create3DBases>>["offUp"];
+  mouseEvents: MouseEvents;
 }) {
   // Havok
   const havok = await getHavok();
@@ -56,9 +53,7 @@ export default async function createCard({
     body,
     world,
     mesh,
-    onDown,
-    onUp,
-    offUp,
+    mouseEvents,
     scene,
   });
 

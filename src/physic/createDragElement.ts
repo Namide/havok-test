@@ -10,13 +10,12 @@ import { getHavok } from "./getHavok";
 import { create3DBases } from "../render/create3DBases";
 import { euler, quaternion } from "../constants";
 import { DynamicTween, easeInOutExpo } from "twon";
+import { MouseEvents } from "../events/createMouseEvents";
 
 export const createDragElement = async ({
   world,
   mesh,
-  onDown,
-  onUp,
-  offUp,
+  mouseEvents,
   body,
   scene,
 }: {
@@ -24,9 +23,7 @@ export const createDragElement = async ({
   mesh: THREE.Mesh;
   body: HP_BodyId;
   scene: THREE.Scene;
-  onDown: Awaited<ReturnType<typeof create3DBases>>["onDown"];
-  onUp: Awaited<ReturnType<typeof create3DBases>>["onUp"];
-  offUp: Awaited<ReturnType<typeof create3DBases>>["offUp"];
+  mouseEvents: MouseEvents;
 }) => {
   const havok = await getHavok();
   // let parent: HP_BodyId | undefined;
@@ -45,7 +42,7 @@ export const createDragElement = async ({
     .setFromEuler(euler.set(Math.PI / 2, 0, Math.PI / 2), true)
     .clone();
 
-  onDown(mesh, () => {
+  mouseEvents.onDown(mesh, () => {
     const initPosition = mesh.position;
     const initRotation = mesh.quaternion;
     const endPosition = initPosition.clone();
@@ -80,7 +77,7 @@ export const createDragElement = async ({
       });
 
     const onUpCallback = () => {
-      offUp(undefined, onUpCallback);
+      mouseEvents.offUp(undefined, onUpCallback);
 
       if (tween) {
         tween.dispose();
@@ -105,7 +102,7 @@ export const createDragElement = async ({
       // );
     };
 
-    onUp(undefined, onUpCallback);
+    mouseEvents.onUp(undefined, onUpCallback);
   });
 
   return {};
