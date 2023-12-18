@@ -108,9 +108,9 @@ export async function createMouseEvents({
   canvas.addEventListener("mousedown", down);
   window.addEventListener("mouseup", up);
   window.addEventListener("mouseleave", up);
-  canvas.addEventListener("pointerdown", down);
-  window.addEventListener("pointerup", up);
-  window.addEventListener("pointerleave", up);
+  // canvas.addEventListener("pointerdown", down);
+  // window.addEventListener("pointerup", up);
+  // window.addEventListener("pointerleave", up);
 
   function down(event: MouseEvent) {
     // event.preventDefault();

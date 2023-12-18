@@ -55,12 +55,10 @@ export const createApp = async () => {
 
     mouseEvents.onOver(mesh, (target) => {
       renderWorld.renderer.domElement.style.cursor = "grab";
-      console.log("over:", target);
     });
 
     mouseEvents.onOut(mesh, (target) => {
       renderWorld.renderer.domElement.style.cursor = "auto";
-      console.log("out:", target);
     });
 
     mouseEvents.onClick(mesh, (target) => {

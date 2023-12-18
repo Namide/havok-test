@@ -1,10 +1,10 @@
 import * as THREE from "three";
 import { DynamicTween, easeInOutExpo } from "twon";
-import { euler, quaternion, vector3 } from "../constants";
+import { euler, quaternion } from "../constants";
 import { MouseEvents, MousePosition } from "../events/createMouseEvents";
 import { PhysicWorld, RenderWorld } from "../render/create3DBases";
 import { getHavok } from "./getHavok";
-import { HP_BodyId, QTransform } from "./havok/HavokPhysics";
+import { HP_BodyId, QTransform, Vector3 } from "./havok/HavokPhysics";
 
 export const createDragElement = async ({
   renderWorld,
@@ -24,9 +24,18 @@ export const createDragElement = async ({
 
   const DISTANCE = 0;
 
-  let oldPosition: THREE.Vector3;
-  let currentPosition: THREE.Vector3;
-  let oldTime: number;
+  const transform = {
+    oldTime: 0,
+    currentTime: 0,
+    oldPosition: mesh.position.clone(),
+    currentPosition: mesh.position,
+    oldAngle: mesh.quaternion.clone(),
+    currentAngle: mesh.quaternion,
+  };
+
+  // let oldPosition: THREE.Vector3;
+  // let currentPosition: THREE.Vector3;
+  // let oldTime: number;
   let endPosition: THREE.Vector3;
   let updatePositionRAF: number;
 
@@ -67,6 +76,61 @@ export const createDragElement = async ({
     });
   };
 
+  const applyVelocity = () => {
+    const dt = (Date.now() - transform.oldTime) / 1000;
+    console.log(
+      "Why 0?",
+      dt,
+      transform.currentPosition.toArray(),
+      transform.oldPosition.toArray(),
+    );
+    const linearVelocity = transform.currentPosition
+      .subVectors(transform.currentPosition, transform.oldPosition)
+      .multiplyScalar(dt);
+    // const angularVelocity = transform.currentAngle
+    //   .sub(transform.oldAngle)
+    //   .multiplyScalar(dt);
+    // const angularVelocity = havok.HP_Body_GetAngularVelocity(body)[1];
+    havok.HP_Body_SetMotionType(body, havok.MotionType.DYNAMIC);
+
+    havok.HP_Body_SetLinearVelocity(
+      body,
+      // [0, 0, 0],
+      linearVelocity.toArray(),
+    );
+
+    const angularVelocity = transform.currentAngle.multiply(
+      transform.oldAngle.invert(),
+    );
+    angularVelocity.x *= dt * 5;
+    angularVelocity.y *= dt * 5;
+    angularVelocity.z *= dt * 5;
+    angularVelocity.w *= dt * 5;
+
+    console.log(
+      "vel:",
+      linearVelocity.toArray(),
+      "ang:",
+      euler.setFromQuaternion(angularVelocity).toArray(),
+    );
+    // .multiplyScalar(dt);
+    havok.HP_Body_SetAngularVelocity(
+      body,
+      euler.setFromQuaternion(angularVelocity).toArray().slice(0, 3) as [
+        number,
+        number,
+        number,
+      ] as Vector3,
+    );
+
+    // console.log(linearVelocity.toArray());
+
+    // havok.HP_Body_SetAngularVelocity(
+    //   body,
+    //   angularVelocity.map((val) => val * 100) as Vector3,
+    // );
+  };
+
   const onUpCallback = () => {
     mouseEvents.offUp(undefined, onUpCallback);
     mouseEvents.offMove(undefined, onMoveCallback);
@@ -77,26 +141,12 @@ export const createDragElement = async ({
       tween = undefined;
     }
 
-    // const dt = 1000 / Date.now() - oldTime;
-    // const linearVelocity = currentPosition
-    //   .sub(oldPosition)
-    //   .multiplyScalar(dt);
-    // const angularVelocity = havok.HP_Body_GetAngularVelocity(body)[1];
-
-    havok.HP_Body_SetMotionType(body, havok.MotionType.DYNAMIC);
-
-    // havok.HP_Body_SetLinearVelocity(body, linearVelocity.toArray());
-
-    // console.log(linearVelocity.toArray());
-
-    // havok.HP_Body_SetAngularVelocity(
-    //   body,
-    //   angularVelocity.map((val) => val * 100) as Vector3,
-    // );
+    applyVelocity();
   };
 
   const onUpdatePosition = () => {
     cancelAnimationFrame(updatePositionRAF);
+    console.log("update");
     refreshPosition();
     updatePositionRAF = requestAnimationFrame(onUpdatePosition);
   };
@@ -105,11 +155,21 @@ export const createDragElement = async ({
     position: THREE.Vector3 = endPosition,
     rotation: THREE.Quaternion = endRotation,
   ) => {
-    oldTime = Date.now();
-    oldPosition = currentPosition?.clone();
-    currentPosition = position;
+    const currentTime = Date.now();
+    if (currentTime - transform.oldTime > 250) {
+      transform.oldTime = transform.currentTime;
+      transform.currentTime = Date.now();
+      transform.oldPosition.copy(transform.currentPosition);
+      transform.oldAngle.copy(transform.currentAngle);
+      transform.currentPosition = position;
+      transform.currentAngle = rotation;
+    }
     const qTransform = [position.toArray(), rotation.toArray()] as QTransform;
-
+    console.log(
+      "refresh",
+      transform.currentPosition.toArray(),
+      transform.oldPosition.toArray(),
+    );
     havok.HP_Body_SetQTransform(body, qTransform);
   };
 
@@ -133,10 +193,18 @@ export const createDragElement = async ({
     })
       .to(1)
       .on("update", (value: number) => {
-        refreshPosition(
-          initPosition.lerpVectors(initPosition, endPosition, value),
-          initRotation.slerpQuaternions(initRotation, endRotation, value),
-        );
+        if (tween) {
+          console.log(
+            "tween",
+            initPosition
+              .lerpVectors(initPosition, endPosition, value)
+              .toArray(),
+          );
+          refreshPosition(
+            initPosition.lerpVectors(initPosition, endPosition, value),
+            initRotation.slerpQuaternions(initRotation, endRotation, value),
+          );
+        }
       })
       .on("end", () => {
         // Fix end event always called
