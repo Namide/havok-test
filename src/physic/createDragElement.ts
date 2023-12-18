@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { DynamicTween, easeInOutExpo } from "twon";
-import { euler, quaternion } from "../constants";
+import { euler, quaternion, vector3 } from "../constants";
 import { MouseEvents, MousePosition } from "../events/createMouseEvents";
 import { PhysicWorld, RenderWorld } from "../render/create3DBases";
 import { getHavok } from "./getHavok";
@@ -35,8 +35,16 @@ export const createDragElement = async ({
   // const finalRotation = quaternion
   //   .setFromEuler(euler.set(Math.PI / 2, 0, Math.PI / 2), true)
   //   .toArray() as Quaternion;
+
+  // const endRotation = quaternion
+  //   .setFromEuler(euler.set(Math.PI / 2, 0, Math.PI / 2), true)
+  //   .clone();
+
   const endRotation = quaternion
-    .setFromEuler(euler.set(Math.PI / 2, 0, Math.PI / 2), true)
+    .setFromEuler(
+      euler.setFromVector3(renderWorld.camera.getWorldDirection(vector3)),
+      true,
+    )
     .clone();
 
   const onMoveCallback = (mousePosition: MousePosition) => {
@@ -118,8 +126,11 @@ export const createDragElement = async ({
           initRotation.slerpQuaternions(initRotation, endRotation, value),
         );
       })
-      .on("end", (value: number) => {
-        onUpdatePosition();
+      .on("end", () => {
+        // Fix end event always called
+        if (tween) {
+          onUpdatePosition();
+        }
       });
   });
 
