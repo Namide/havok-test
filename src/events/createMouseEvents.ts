@@ -15,7 +15,7 @@ export async function createMouseEvents({
   canvas: HTMLCanvasElement;
 }) {
   const raycaster = new THREE.Raycaster();
-  const mouse = new THREE.Vector2();
+  const position = new THREE.Vector2();
 
   let meshOver: THREE.Object3D | undefined;
 
@@ -24,6 +24,7 @@ export async function createMouseEvents({
     | { name: "mouseout"; callback: (data: THREE.Object3D) => void }
     | { name: "click"; callback: (data: THREE.Object3D) => void }
     | { name: "down"; callback: (data: THREE.Object3D) => void }
+    | { name: "move"; callback: (event: MousePosition) => void }
     | { name: "up"; callback: () => void }
   >();
 
@@ -98,7 +99,11 @@ export async function createMouseEvents({
     dispatchUp(undefined);
   });
 
-  window.addEventListener("mousemove", mouseMove);
+  on("move", (position: MousePosition) => {
+    dispatchMove(undefined, position);
+  });
+
+  window.addEventListener("mousemove", move);
   canvas.addEventListener("click", click);
   canvas.addEventListener("mousedown", down);
   window.addEventListener("mouseup", up);
@@ -108,9 +113,9 @@ export async function createMouseEvents({
   window.addEventListener("pointerleave", up);
 
   function down(event: MouseEvent) {
-    event.preventDefault();
-    event.stopPropagation();
-    raycaster.setFromCamera(mouse, camera);
+    // event.preventDefault();
+    // event.stopPropagation();
+    raycaster.setFromCamera(position, camera);
     const object3D = raycaster.intersectObject(scene, true)?.[0]?.object;
     if (object3D) {
       dispatch("down", object3D);
@@ -122,21 +127,21 @@ export async function createMouseEvents({
   }
 
   function click() {
-    raycaster.setFromCamera(mouse, camera);
+    raycaster.setFromCamera(position, camera);
     const object3D = raycaster.intersectObject(scene, true)?.[0]?.object;
     if (object3D) {
       dispatch("click", object3D);
     }
   }
 
-  function mouseMove(event: MouseEvent) {
-    mouse.x = (event.clientX / screenSize.width) * 2 - 1;
-    mouse.y = -(event.clientY / screenSize.height) * 2 + 1;
-    dispatchMove(undefined, mouse);
+  function move(event: MouseEvent) {
+    position.x = (event.clientX / screenSize.width) * 2 - 1;
+    position.y = -(event.clientY / screenSize.height) * 2 + 1;
+    dispatch("move", position);
   }
 
   function testHover() {
-    raycaster.setFromCamera(mouse, camera);
+    raycaster.setFromCamera(position, camera);
     const object3D = raycaster.intersectObject(scene, true)?.[0]?.object;
 
     if (object3D !== meshOver) {
@@ -167,6 +172,7 @@ export async function createMouseEvents({
     offUp,
     onMove,
     offMove,
+    position,
   };
 }
 

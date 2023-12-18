@@ -8,7 +8,7 @@ code:
 		bash
 
 dev:
-	(sleep 3 && python3 -m webbrowser http://localhost:8081) &
+	(sleep 4 && python3 -m webbrowser http://localhost:8081) &
 	docker run -ti --rm \
 		-v $(shell pwd):/usr/src/app \
 		-w /usr/src/app \
