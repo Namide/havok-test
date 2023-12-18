@@ -1,8 +1,8 @@
+import * as THREE from "three";
 import { getHavok } from "../physic/getHavok";
 import { HP_WorldId, Quaternion, Vector3 } from "../physic/havok/HavokPhysics";
-import * as THREE from "three";
-import { getCheckerTexture } from "../render/textures";
 import { PhysicWorld } from "../render/create3DBases";
+import { getCheckerTexture } from "../render/textures";
 
 export default async function createGround({
   physicWorld,

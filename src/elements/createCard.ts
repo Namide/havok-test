@@ -1,10 +1,10 @@
+import * as THREE from "three";
+import { MouseEvents } from "../events/createMouseEvents";
+import { createDragElement } from "../physic/createDragElement";
 import { getHavok } from "../physic/getHavok";
 import { Quaternion, Vector3 } from "../physic/havok/HavokPhysics";
-import * as THREE from "three";
-import { getCheckerTexture } from "../render/textures";
-import { createDragElement } from "../physic/createDragElement";
-import { MouseEvents } from "../events/createMouseEvents";
 import { PhysicWorld, RenderWorld } from "../render/create3DBases";
+import { getCheckerTexture } from "../render/textures";
 
 export default async function createCard({
   physicWorld,

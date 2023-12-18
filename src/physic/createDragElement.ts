@@ -1,4 +1,13 @@
 import * as THREE from "three";
+import { DynamicTween, easeInOutExpo } from "twon";
+import { euler, quaternion } from "../constants";
+import { MouseEvents, MousePosition } from "../events/createMouseEvents";
+import {
+  PhysicWorld,
+  RenderWorld,
+  create3DBases,
+} from "../render/create3DBases";
+import { getHavok } from "./getHavok";
 import {
   HP_BodyId,
   HP_WorldId,
@@ -6,15 +15,6 @@ import {
   Quaternion,
   Vector3,
 } from "./havok/HavokPhysics";
-import { getHavok } from "./getHavok";
-import {
-  PhysicWorld,
-  RenderWorld,
-  create3DBases,
-} from "../render/create3DBases";
-import { euler, quaternion } from "../constants";
-import { DynamicTween, easeInOutExpo } from "twon";
-import { MouseEvents, MousePosition } from "../events/createMouseEvents";
 
 export const createDragElement = async ({
   physicWorld,

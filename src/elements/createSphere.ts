@@ -1,8 +1,8 @@
-import { Vector3 } from "../physic/havok/HavokPhysics";
-import { createCollisionSphere } from "../physic/createCollisionSphere";
 import * as THREE from "three";
-import { getCheckerTexture } from "../render/textures";
+import { createCollisionSphere } from "../physic/createCollisionSphere";
+import { Vector3 } from "../physic/havok/HavokPhysics";
 import { PhysicWorld } from "../render/create3DBases";
+import { getCheckerTexture } from "../render/textures";
 
 export default async function createSphere({
   physicWorld,

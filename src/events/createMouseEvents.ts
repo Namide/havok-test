@@ -1,5 +1,5 @@
-import { createEventEmitter } from "./createEventEmitter";
 import * as THREE from "three";
+import { createEventEmitter } from "./createEventEmitter";
 
 export type MousePosition = { x: number; y: number };
 

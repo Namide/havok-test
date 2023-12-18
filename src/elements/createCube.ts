@@ -1,8 +1,8 @@
-import { HP_WorldId, Quaternion, Vector3 } from "../physic/havok/HavokPhysics";
-import { createCollisionBox } from "../physic/createCollisionBox";
 import * as THREE from "three";
-import { getCheckerTexture } from "../render/textures";
+import { createCollisionBox } from "../physic/createCollisionBox";
+import { HP_WorldId, Quaternion, Vector3 } from "../physic/havok/HavokPhysics";
 import { PhysicWorld } from "../render/create3DBases";
+import { getCheckerTexture } from "../render/textures";
 
 export default async function createCube({
   physicWorld,
