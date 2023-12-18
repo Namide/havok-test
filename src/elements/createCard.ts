@@ -1,25 +1,23 @@
-// import { DynamicTween, easeInOutCubic } from "twon";
-import { euler, quaternion } from "../constants";
 import { getHavok } from "../physic/getHavok";
-import { HP_WorldId, Quaternion, Vector3 } from "../physic/havok/HavokPhysics";
-import type { create3DBases } from "../render/create3DBases";
+import { Quaternion, Vector3 } from "../physic/havok/HavokPhysics";
 import * as THREE from "three";
 import { getCheckerTexture } from "../render/textures";
 import { createDragElement } from "../physic/createDragElement";
 import { MouseEvents } from "../events/createMouseEvents";
+import { PhysicWorld, RenderWorld } from "../render/create3DBases";
 
 export default async function createCard({
-  world,
+  physicWorld,
   position,
   rotation,
   size,
   mouseEvents,
-  scene,
+  renderWorld,
 }: {
-  world: HP_WorldId;
+  physicWorld: PhysicWorld;
+  renderWorld: RenderWorld;
   position: Vector3;
   rotation: Quaternion;
-  scene: THREE.Scene;
   size: Vector3;
   mouseEvents: MouseEvents;
 }) {
@@ -38,7 +36,7 @@ export default async function createCard({
     /* Inertia Orientation */ [0, 0, 0, 1],
   ]);
   havok.HP_Body_SetMotionType(body, havok.MotionType.DYNAMIC);
-  havok.HP_World_AddBody(world, body, false);
+  havok.HP_World_AddBody(physicWorld.world, body, false);
 
   // Render
   const map = await getCheckerTexture();
@@ -51,10 +49,10 @@ export default async function createCard({
   // Drag and drop
   await createDragElement({
     body,
-    world,
+    physicWorld,
     mesh,
     mouseEvents,
-    scene,
+    renderWorld,
   });
 
   // Update

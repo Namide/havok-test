@@ -1,20 +1,21 @@
-import { HP_WorldId, Vector3 } from "../physic/havok/HavokPhysics";
+import { Vector3 } from "../physic/havok/HavokPhysics";
 import { createCollisionSphere } from "../physic/createCollisionSphere";
 import * as THREE from "three";
 import { getCheckerTexture } from "../render/textures";
+import { PhysicWorld } from "../render/create3DBases";
 
 export default async function createSphere({
-  world,
+  physicWorld,
   position,
   size,
 }: {
-  world: HP_WorldId;
+  physicWorld: PhysicWorld;
   position: Vector3;
   size: number;
 }) {
   // Havok
   const { getTransform } = await createCollisionSphere({
-    world,
+    physicWorld,
     position,
     size,
   });

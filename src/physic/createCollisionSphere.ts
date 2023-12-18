@@ -1,12 +1,13 @@
+import { PhysicWorld } from "../render/create3DBases";
 import { getHavok } from "./getHavok";
-import { HP_WorldId, Vector3 } from "./havok/HavokPhysics";
+import { Vector3 } from "./havok/HavokPhysics";
 
 export const createCollisionSphere = async ({
-  world,
+  physicWorld,
   position,
   size,
 }: {
-  world: HP_WorldId;
+  physicWorld: PhysicWorld;
   position: Vector3;
   size: number;
 }) => {
@@ -20,7 +21,7 @@ export const createCollisionSphere = async ({
     /* Inertia for mass of 1*/ [0.001, 0.001, 0.001],
     /* Inertia Orientation */ [0, 0, 0, 1],
   ]);
-  havok.HP_World_AddBody(world, body, false);
+  havok.HP_World_AddBody(physicWorld.world, body, false);
   havok.HP_Body_SetMotionType(body, havok.MotionType.DYNAMIC);
 
   const getTransform = () => {

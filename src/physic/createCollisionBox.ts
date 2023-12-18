@@ -1,13 +1,14 @@
+import { PhysicWorld } from "../render/create3DBases";
 import { getHavok } from "./getHavok";
 import { HP_WorldId, Quaternion, Vector3 } from "./havok/HavokPhysics";
 
 export const createCollisionBox = async ({
-  world,
+  physicWorld,
   position,
   rotation,
   size,
 }: {
-  world: HP_WorldId;
+  physicWorld: PhysicWorld;
   position: Vector3;
   rotation: Quaternion;
   size: Vector3;
@@ -25,7 +26,7 @@ export const createCollisionBox = async ({
     /* Inertia for mass of 1*/ [0.001, 0.001, 0.001],
     /* Inertia Orientation */ [0, 0, 0, 1],
   ]);
-  havok.HP_World_AddBody(world, body, false);
+  havok.HP_World_AddBody(physicWorld.world, body, false);
   havok.HP_Body_SetMotionType(body, havok.MotionType.DYNAMIC);
 
   const getTransform = () => {

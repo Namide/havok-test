@@ -7,22 +7,26 @@ import {
   Vector3,
 } from "./havok/HavokPhysics";
 import { getHavok } from "./getHavok";
-import { create3DBases } from "../render/create3DBases";
+import {
+  PhysicWorld,
+  RenderWorld,
+  create3DBases,
+} from "../render/create3DBases";
 import { euler, quaternion } from "../constants";
 import { DynamicTween, easeInOutExpo } from "twon";
-import { MouseEvents } from "../events/createMouseEvents";
+import { MouseEvents, MousePosition } from "../events/createMouseEvents";
 
 export const createDragElement = async ({
-  world,
+  physicWorld,
+  renderWorld,
   mesh,
   mouseEvents,
   body,
-  scene,
 }: {
-  world: HP_WorldId;
+  physicWorld: PhysicWorld;
+  renderWorld: RenderWorld;
   mesh: THREE.Mesh;
   body: HP_BodyId;
-  scene: THREE.Scene;
   mouseEvents: MouseEvents;
 }) => {
   const havok = await getHavok();
@@ -33,7 +37,7 @@ export const createDragElement = async ({
   let currentPosition: THREE.Vector3;
   let oldTime: number;
 
-  const dragPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 4);
+  // const dragPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 4);
 
   // const finalRotation = quaternion
   //   .setFromEuler(euler.set(Math.PI / 2, 0, Math.PI / 2), true)
@@ -103,7 +107,42 @@ export const createDragElement = async ({
     };
 
     mouseEvents.onUp(undefined, onUpCallback);
+
+    mouseEvents.onMove(undefined, (mousePosition) => {
+      console.log(
+        screenPointTo3DPoint({
+          mousePosition,
+          camera: renderWorld.camera,
+          distance: 0,
+        }),
+      );
+      console.log(
+        screenPointTo3DPoint({
+          mousePosition,
+          camera: renderWorld.camera,
+          distance: 0.5,
+        }),
+      );
+    });
   });
 
   return {};
 };
+
+function screenPointTo3DPoint({
+  mousePosition,
+  camera,
+  distance = 0,
+}: {
+  mousePosition: MousePosition;
+  camera: THREE.Camera;
+  distance?: number;
+}) {
+  const worldPoint = new THREE.Vector3(
+    mousePosition.x,
+    mousePosition.y,
+    distance,
+  );
+  worldPoint.unproject(camera);
+  return worldPoint;
+}

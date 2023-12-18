@@ -59,12 +59,23 @@ export async function create3DBases() {
   }
 
   return {
+    renderWorld: {
+      camera,
+      renderer,
+      scene,
+    },
+    physicWorld: {
+      world,
+    },
     mouseEvents,
     update,
     render,
-    camera,
-    renderer,
-    world,
-    scene,
   };
 }
+
+export type RenderWorld = Awaited<
+  ReturnType<typeof create3DBases>
+>["renderWorld"];
+export type PhysicWorld = Awaited<
+  ReturnType<typeof create3DBases>
+>["physicWorld"];

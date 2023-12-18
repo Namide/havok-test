@@ -2,14 +2,15 @@ import { getHavok } from "../physic/getHavok";
 import { HP_WorldId, Quaternion, Vector3 } from "../physic/havok/HavokPhysics";
 import * as THREE from "three";
 import { getCheckerTexture } from "../render/textures";
+import { PhysicWorld } from "../render/create3DBases";
 
 export default async function createGround({
-  world,
+  physicWorld,
   position,
   rotation,
   size,
 }: {
-  world: HP_WorldId;
+  physicWorld: PhysicWorld;
   position: Vector3;
   rotation: Quaternion;
   size: Vector3;
@@ -29,7 +30,7 @@ export default async function createGround({
     havok.HP_Shape_CreateBox([0, 0, 0], rotation, size)[1],
   );
   havok.HP_Body_SetQTransform(body, [position, rotation]);
-  havok.HP_World_AddBody(world, body, false);
+  havok.HP_World_AddBody(physicWorld.world, body, false);
   havok.HP_Body_SetMotionType(body, havok.MotionType.STATIC);
 
   return {

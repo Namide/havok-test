@@ -1,6 +1,5 @@
 import { euler, quaternion } from "../constants";
 import createCard from "../elements/createCard";
-import createCardRotation from "../elements/createCardRotation";
 import createCube from "../elements/createCube";
 import createGround from "../elements/createGround";
 import createSphere from "../elements/createSphere";
@@ -10,9 +9,8 @@ import { create3DBases } from "../render/create3DBases";
 // Rapier example https://github.com/viridia/demo-rapier-three/tree/main
 export const createApp = async () => {
   const {
-    renderer,
-    scene,
-    world,
+    renderWorld,
+    physicWorld,
     update: update3DBases,
     render,
     mouseEvents,
@@ -34,17 +32,17 @@ export const createApp = async () => {
 
   // Ground
   const { mesh: groundMesh } = await createGround({
-    world,
+    physicWorld,
     size: [20, 0.2, 20],
     position: [0, 0, 0],
     rotation: [0, 0, 0, 1],
   });
-  scene.add(groundMesh);
+  renderWorld.scene.add(groundMesh);
 
   // Sphere
   for (let i = 0; i < 10; i++) {
     const { mesh, update } = await createSphere({
-      world,
+      physicWorld,
       position: [
         Math.random() * 2 - 1,
         Math.random() * 4 + 2,
@@ -52,16 +50,16 @@ export const createApp = async () => {
       ],
       size: Math.random() / 10 + 0.1,
     });
-    scene.add(mesh);
+    renderWorld.scene.add(mesh);
     updates.push(update);
 
     mouseEvents.onOver(mesh, (target) => {
-      renderer.domElement.style.cursor = "grab";
+      renderWorld.renderer.domElement.style.cursor = "grab";
       console.log("over:", target);
     });
 
     mouseEvents.onOut(mesh, (target) => {
-      renderer.domElement.style.cursor = "auto";
+      renderWorld.renderer.domElement.style.cursor = "auto";
       console.log("out:", target);
     });
 
@@ -73,7 +71,7 @@ export const createApp = async () => {
   // Cards
   for (let i = 0; i < 5; i++) {
     const { mesh: card, update } = await createCard({
-      world,
+      physicWorld,
       position: [
         Math.random() * 2 - 1,
         Math.random() * 4 + 2,
@@ -91,16 +89,16 @@ export const createApp = async () => {
         .toArray() as Quaternion,
       size: [3 / 2, 1, 0.01],
       mouseEvents,
-      scene,
+      renderWorld,
     });
-    scene.add(card);
+    renderWorld.scene.add(card);
     updates.push(update);
   }
 
   // Cube
   for (let i = 0; i < 100; i++) {
     const { mesh, update } = await createCube({
-      world,
+      physicWorld,
       position: [
         Math.random() * 2 - 1,
         Math.random() * 4 + 2,
@@ -113,11 +111,11 @@ export const createApp = async () => {
       ],
       rotation: getRandomRotation(),
     });
-    scene.add(mesh);
+    renderWorld.scene.add(mesh);
     updates.push(update);
   }
 
-  renderer.setAnimationLoop(tick);
+  renderWorld.renderer.setAnimationLoop(tick);
 
   function tick(/* time: number */) {
     // required if controls.enableDamping or controls.autoRotate are set to true
