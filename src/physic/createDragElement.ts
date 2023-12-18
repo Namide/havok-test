@@ -40,12 +40,24 @@ export const createDragElement = async ({
   //   .setFromEuler(euler.set(Math.PI / 2, 0, Math.PI / 2), true)
   //   .clone();
 
-  const endRotation = quaternion
-    .setFromEuler(
-      euler.setFromVector3(renderWorld.camera.getWorldDirection(vector3)),
-      true,
-    )
-    .clone();
+  // const endRotation = quaternion
+  //   .setFromEuler(
+  //     euler.setFromVector3(
+  //       renderWorld.camera
+  //         .getWorldDirection(vector3)
+  //         .applyEuler(euler.set(Math.PI / 2, 0, Math.PI / 2)),
+
+  //       // vector3
+  //       //   .set(0, 0, 0)
+  //       //   .applyEuler(
+  //       //     euler.setFromVector3(renderWorld.camera.getWorldDirection(vector3)),
+  //       //   ),
+  //     ),
+  //     true,
+  //   )
+  //   .clone();
+
+  const endRotation = quaternion.copy(renderWorld.camera.quaternion).clone();
 
   const onMoveCallback = (mousePosition: MousePosition) => {
     endPosition = screenPointTo3DPoint({

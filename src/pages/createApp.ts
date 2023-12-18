@@ -87,7 +87,7 @@ export const createApp = async () => {
           true,
         )
         .toArray() as Quaternion,
-      size: [3 / 2, 1, 0.01],
+      size: [1, 3 / 2, 0.01],
       mouseEvents,
       renderWorld,
     });
