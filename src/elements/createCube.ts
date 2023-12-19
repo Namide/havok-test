@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { createCollisionBox } from "../physic/createCollisionBox";
-import { HP_WorldId, Quaternion, Vector3 } from "../physic/havok/HavokPhysics";
+import { Quaternion, Vector3 } from "../physic/havok/HavokPhysics";
 import { PhysicWorld } from "../render/create3DBases";
 import { getCheckerTexture } from "../render/textures";
 
@@ -31,8 +31,8 @@ export default async function createCube({
   const mesh = new THREE.Mesh(geometry, material);
 
   // Update
-  const update = () => {
-    const { position, quaternion } = getTransform();
+  const update = async () => {
+    const { position, quaternion } = await getTransform();
     mesh.position.set(...position);
     mesh.quaternion.set(...quaternion);
   };

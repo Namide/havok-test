@@ -4,7 +4,7 @@ import { createMouseEvents } from "../events/createMouseEvents";
 import { createHavok } from "../physic/createHavok";
 
 export async function create3DBases() {
-  const { world, update: updatePhysic } = await createHavok();
+  const { world, havok, update: updatePhysic } = await createHavok();
 
   const screenSize = {
     width: window.innerWidth,
@@ -65,6 +65,7 @@ export async function create3DBases() {
       scene,
     },
     physicWorld: {
+      havok,
       world,
     },
     mouseEvents,

@@ -53,11 +53,11 @@ export const createApp = async () => {
     renderWorld.scene.add(mesh);
     updates.push(update);
 
-    mouseEvents.onOver(mesh, (target) => {
+    mouseEvents.onOver(mesh, () => {
       renderWorld.renderer.domElement.style.cursor = "grab";
     });
 
-    mouseEvents.onOut(mesh, (target) => {
+    mouseEvents.onOut(mesh, () => {
       renderWorld.renderer.domElement.style.cursor = "auto";
     });
 

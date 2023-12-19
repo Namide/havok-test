@@ -30,73 +30,80 @@ export type HP_DebugGeometryId = [bigint];
 export type ShapePathIterator = [/*shapeId*/ bigint, /*pathData*/ bigint];
 
 export enum Result {
-  RESULT_OK,
-  RESULT_FAIL,
-  RESULT_INVALIDHANDLE,
-  RESULT_INVALIDARGS,
-  RESULT_NOTIMPLEMENTED,
+  RESULT_OK = 0,
+  RESULT_FAIL = 1,
+  RESULT_INVALIDHANDLE = 2,
+  RESULT_INVALIDARGS = 3,
+  RESULT_NOTIMPLEMENTED = 4,
 }
 
-export enum ShapeType {
-  COLLIDER,
-  CONTAINER,
-}
+// export enum ShapeType {
+//   COLLIDER = 0,
+//   CONTAINER = 1,
+// }
 
-export enum MotionType {
-  STATIC,
-  KINEMATIC,
-  DYNAMIC,
-}
+export type ShapeType = "ShapeType.COLLIDER" | "ShapeType.CONTAINER";
+
+// export enum MotionType {
+//   STATIC = 0,
+//   KINEMATIC = 1,
+//   DYNAMIC = 2,
+// }
+
+export type MotionType =
+  | "MotionType.STATIC"
+  | "MotionType.KINEMATIC"
+  | "MotionType.DYNAMIC";
 
 export enum EventType {
-  COLLISION_STARTED,
-  COLLISION_CONTINUED,
-  COLLISION_FINISHED,
-  TRIGGER_ENTERED,
-  TRIGGER_EXITED,
+  COLLISION_STARTED = 0,
+  COLLISION_CONTINUED = 1,
+  COLLISION_FINISHED = 2,
+  TRIGGER_ENTERED = 3,
+  TRIGGER_EXITED = 4,
 }
 
 export enum ConstraintMotorType {
-  NONE,
-  VELOCITY,
-  POSITION,
-  SPRING_FORCE,
-  SPRING_ACCELERATION,
+  NONE = 0,
+  VELOCITY = 1,
+  POSITION = 2,
+  SPRING_FORCE = 3,
+  SPRING_ACCELERATION = 4,
 }
 
 export enum ConstraintAxisLimitMode {
-  FREE,
-  LIMITED,
-  LOCKED,
+  FREE = 0,
+  LIMITED = 1,
+  LOCKED = 2,
 }
 
 export enum ConstraintAxis {
-  LINEAR_X,
-  LINEAR_Y,
-  LINEAR_Z,
-  ANGULAR_X,
-  ANGULAR_Y,
-  ANGULAR_Z,
-  LINEAR_DISTANCE,
+  LINEAR_X = 0,
+  LINEAR_Y = 1,
+  LINEAR_Z = 2,
+  ANGULAR_X = 3,
+  ANGULAR_Y = 4,
+  ANGULAR_Z = 5,
+  LINEAR_DISTANCE = 6,
 }
 
 export enum MaterialCombine {
-  GEOMETRIC_MEAN,
-  MINIMUM,
-  MAXIMUM,
-  ARITHMETIC_MEAN,
-  MULTIPLY,
+  GEOMETRIC_MEAN = 0,
+  MINIMUM = 1,
+  MAXIMUM = 2,
+  ARITHMETIC_MEAN = 3,
+  MULTIPLY = 4,
 }
 
 export enum ActivationState {
-  ACTIVE,
-  INACTIVE,
+  ACTIVE = 0,
+  INACTIVE = 1,
 }
 
 export enum ActivationControl {
-  SIMULATION_CONTROLLED,
-  ALWAYS_ACTIVE,
-  ALWAYS_INACTIVE,
+  SIMULATION_CONTROLLED = 0,
+  ALWAYS_ACTIVE = 1,
+  ALWAYS_INACTIVE = 2,
 }
 
 export type MassProperties = [

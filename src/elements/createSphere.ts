@@ -29,8 +29,8 @@ export default async function createSphere({
   const mesh = new THREE.Mesh(geometry, material);
 
   // Update
-  const update = () => {
-    const { position, quaternion } = getTransform();
+  const update = async () => {
+    const { position, quaternion } = await getTransform();
     mesh.position.set(...position);
     mesh.quaternion.set(...quaternion);
   };

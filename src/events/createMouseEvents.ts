@@ -112,7 +112,7 @@ export async function createMouseEvents({
   // window.addEventListener("pointerup", up);
   // window.addEventListener("pointerleave", up);
 
-  function down(event: MouseEvent) {
+  function down() {
     // event.preventDefault();
     // event.stopPropagation();
     raycaster.setFromCamera(position, camera);

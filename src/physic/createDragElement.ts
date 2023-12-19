@@ -3,11 +3,12 @@ import { DynamicTween, easeInOutExpo } from "twon";
 import { euler, quaternion } from "../constants";
 import { MouseEvents, MousePosition } from "../events/createMouseEvents";
 import { PhysicWorld, RenderWorld } from "../render/create3DBases";
-import { getHavok } from "./getHavok";
 import { HP_BodyId, QTransform, Vector3 } from "./havok/HavokPhysics";
+import { getHavok } from "./havok/havokWorkerClient";
 
 export const createDragElement = async ({
   renderWorld,
+  physicWorld,
   mesh,
   mouseEvents,
   body,
@@ -18,10 +19,10 @@ export const createDragElement = async ({
   body: HP_BodyId;
   mouseEvents: MouseEvents;
 }) => {
-  const havok = await getHavok();
   // let parent: HP_BodyId | undefined;
   let tween: DynamicTween<number> | undefined;
 
+  const { havok } = getHavok();
   const DISTANCE = 0;
 
   const transform = {
@@ -91,13 +92,17 @@ export const createDragElement = async ({
     //   .sub(transform.oldAngle)
     //   .multiplyScalar(dt);
     // const angularVelocity = havok.HP_Body_GetAngularVelocity(body)[1];
-    havok.HP_Body_SetMotionType(body, havok.MotionType.DYNAMIC);
 
-    havok.HP_Body_SetLinearVelocity(
-      body,
-      // [0, 0, 0],
-      linearVelocity.toArray(),
-    );
+    havok("HP_Body_SetMotionType", [body, "MotionType.DYNAMIC"]);
+    havok("HP_Body_SetLinearVelocity", [body, linearVelocity.toArray()]);
+
+    // havok.HP_Body_SetMotionType(body, havok.MotionType.DYNAMIC);
+
+    // havok.HP_Body_SetLinearVelocity(
+    //   body,
+    //   // [0, 0, 0],
+    //   linearVelocity.toArray(),
+    // );
 
     const angularVelocity = transform.currentAngle.multiply(
       transform.oldAngle.invert(),
@@ -113,15 +118,15 @@ export const createDragElement = async ({
       "ang:",
       euler.setFromQuaternion(angularVelocity).toArray(),
     );
-    // .multiplyScalar(dt);
-    havok.HP_Body_SetAngularVelocity(
+
+    havok("HP_Body_SetAngularVelocity", [
       body,
       euler.setFromQuaternion(angularVelocity).toArray().slice(0, 3) as [
         number,
         number,
         number,
       ] as Vector3,
-    );
+    ]);
 
     // console.log(linearVelocity.toArray());
 
@@ -165,12 +170,12 @@ export const createDragElement = async ({
       transform.currentAngle = rotation;
     }
     const qTransform = [position.toArray(), rotation.toArray()] as QTransform;
-    console.log(
-      "refresh",
-      transform.currentPosition.toArray(),
-      transform.oldPosition.toArray(),
-    );
-    havok.HP_Body_SetQTransform(body, qTransform);
+    // console.log(
+    //   "refresh",
+    //   transform.currentPosition.toArray(),
+    //   transform.oldPosition.toArray(),
+    // );
+    havok("HP_Body_SetQTransform", [body, qTransform]);
   };
 
   mouseEvents.onDown(mesh, () => {
@@ -182,7 +187,7 @@ export const createDragElement = async ({
       distance: DISTANCE,
     });
 
-    havok.HP_Body_SetMotionType(body, havok.MotionType.STATIC);
+    havok("HP_Body_SetMotionType", [body, "MotionType.STATIC"]);
 
     mouseEvents.onMove(undefined, onMoveCallback);
     mouseEvents.onUp(undefined, onUpCallback);

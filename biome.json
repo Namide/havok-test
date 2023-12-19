@@ -11,6 +11,6 @@
 		"rules": {
 			"recommended": true
 		},
-		"ignore": ["./src/physic/havok/*"]
+		"ignore": ["./public/havok/*", "./src/physic/havok/*"]
 	}
 }

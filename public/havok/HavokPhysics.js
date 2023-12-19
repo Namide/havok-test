@@ -1,5 +1,5 @@
 var HavokPhysics = (() => {
-  var _scriptDir = import.meta.url;
+  var _scriptDir = self.location.origin + '/havok/';
 
   return function (HavokPhysics) {
     HavokPhysics = HavokPhysics || {};
@@ -312,14 +312,14 @@ var HavokPhysics = (() => {
     }
     var wasmBinaryFile;
     if (Module["locateFile"]) {
-      wasmBinaryFile = "HavokPhysics.wasm?init";
+      wasmBinaryFile = "HavokPhysics.wasm";
       if (!isDataURI(wasmBinaryFile)) {
         wasmBinaryFile = locateFile(wasmBinaryFile);
       }
     } else {
       wasmBinaryFile = new URL(
-        "HavokPhysics.wasm?init",
-        import.meta.url,
+        "HavokPhysics.wasm",
+        self.location.origin + '/havok/',
       ).toString();
     }
     function getBinary(file) {
@@ -2765,4 +2765,40 @@ var HavokPhysics = (() => {
     return HavokPhysics.ready;
   };
 })();
-export default HavokPhysics;
+
+// // Original
+// export default HavokPhysics;
+
+let havok
+
+// Damien
+onmessage = async function (event) {
+  if (!havok) {
+    havok = await HavokPhysics();
+  }
+  // console.log("Havok:", havok);
+  // console.log("Message received from main script:", event.data.name, event.data.params);
+  const params = event.data.params.map(param => {
+
+    if (typeof param === 'string') {
+      const items = param.split('.')
+      if (items.length < 2) {
+        console.log(havok[param])
+        return havok[param]
+      }
+      if (items.length < 3) {
+        console.log(havok[items[0]][items[1]])
+        return havok[items[0]][items[1]]
+      }
+    }
+
+    return param
+  })
+
+  console.log("w:", event.data.name, ...params);
+  // console.log("Params:", params);
+  const workerResult = havok[event.data.name](...params);
+  // console.log("Posting message back to main script");
+  postMessage(workerResult);
+};
+
