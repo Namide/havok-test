@@ -75,7 +75,7 @@ export const createDragElement = async ({
     });
   };
 
-  const applyVelocity = () => {
+  const applyVelocity = async () => {
     const dt = (Date.now() - transform.oldTime) / 1000;
     console.log(
       "Why 0?",
@@ -91,19 +91,14 @@ export const createDragElement = async ({
     //   .multiplyScalar(dt);
     // const angularVelocity = havok.HP_Body_GetAngularVelocity(body)[1];
 
-    physicWorld.havok("HP_Body_SetMotionType", [body, "MotionType.DYNAMIC"]);
-    physicWorld.havok("HP_Body_SetLinearVelocity", [
+    await physicWorld.havok("HP_Body_SetMotionType", [
+      body,
+      "MotionType.DYNAMIC",
+    ]);
+    await physicWorld.havok("HP_Body_SetLinearVelocity", [
       body,
       linearVelocity.toArray(),
     ]);
-
-    // physicWorld.havok.HP_Body_SetMotionType(body, physicWorld.havok.MotionType.DYNAMIC);
-
-    // physicWorld.havok.HP_Body_SetLinearVelocity(
-    //   body,
-    //   // [0, 0, 0],
-    //   linearVelocity.toArray(),
-    // );
 
     const angularVelocity = transform.currentAngle.multiply(
       transform.oldAngle.invert(),
@@ -120,7 +115,7 @@ export const createDragElement = async ({
       euler.setFromQuaternion(angularVelocity).toArray(),
     );
 
-    physicWorld.havok("HP_Body_SetAngularVelocity", [
+    await physicWorld.havok("HP_Body_SetAngularVelocity", [
       body,
       euler.setFromQuaternion(angularVelocity).toArray().slice(0, 3) as [
         number,
@@ -128,16 +123,9 @@ export const createDragElement = async ({
         number,
       ] as Vector3,
     ]);
-
-    // console.log(linearVelocity.toArray());
-
-    // physicWorld.havok.HP_Body_SetAngularVelocity(
-    //   body,
-    //   angularVelocity.map((val) => val * 100) as Vector3,
-    // );
   };
 
-  const onUpCallback = () => {
+  const onUpCallback = async () => {
     mouseEvents.offUp(undefined, onUpCallback);
     mouseEvents.offMove(undefined, onMoveCallback);
     cancelAnimationFrame(updatePositionRAF);
@@ -147,17 +135,17 @@ export const createDragElement = async ({
       tween = undefined;
     }
 
-    applyVelocity();
+    await applyVelocity();
   };
 
-  const onUpdatePosition = () => {
+  const onUpdatePosition = async () => {
     cancelAnimationFrame(updatePositionRAF);
     console.log("update");
-    refreshPosition();
+    await refreshPosition();
     updatePositionRAF = requestAnimationFrame(onUpdatePosition);
   };
 
-  const refreshPosition = (
+  const refreshPosition = async (
     position: THREE.Vector3 = endPosition,
     rotation: THREE.Quaternion = endRotation,
   ) => {
@@ -171,15 +159,10 @@ export const createDragElement = async ({
       transform.currentAngle = rotation;
     }
     const qTransform = [position.toArray(), rotation.toArray()] as QTransform;
-    // console.log(
-    //   "refresh",
-    //   transform.currentPosition.toArray(),
-    //   transform.oldPosition.toArray(),
-    // );
-    physicWorld.havok("HP_Body_SetQTransform", [body, qTransform]);
+    await physicWorld.havok("HP_Body_SetQTransform", [body, qTransform]);
   };
 
-  mouseEvents.onDown(mesh, () => {
+  mouseEvents.onDown(mesh, async () => {
     const initPosition = mesh.position;
     const initRotation = mesh.quaternion;
     endPosition = screenPointTo3DPoint({
@@ -188,7 +171,10 @@ export const createDragElement = async ({
       distance: DISTANCE,
     });
 
-    physicWorld.havok("HP_Body_SetMotionType", [body, "MotionType.STATIC"]);
+    await physicWorld.havok("HP_Body_SetMotionType", [
+      body,
+      "MotionType.STATIC",
+    ]);
 
     mouseEvents.onMove(undefined, onMoveCallback);
     mouseEvents.onUp(undefined, onUpCallback);
@@ -198,24 +184,18 @@ export const createDragElement = async ({
       duration: 750,
     })
       .to(1)
-      .on("update", (value: number) => {
+      .on("update", async (value: number) => {
         if (tween) {
-          console.log(
-            "tween",
-            initPosition
-              .lerpVectors(initPosition, endPosition, value)
-              .toArray(),
-          );
-          refreshPosition(
+          await refreshPosition(
             initPosition.lerpVectors(initPosition, endPosition, value),
             initRotation.slerpQuaternions(initRotation, endRotation, value),
           );
         }
       })
-      .on("end", () => {
+      .on("end", async () => {
         // Fix end event always called
         if (tween) {
-          onUpdatePosition();
+          await onUpdatePosition();
         }
       });
   });

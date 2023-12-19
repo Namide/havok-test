@@ -9,8 +9,8 @@ export async function createHavok() {
   return {
     havok,
     world,
-    update: (delta: number) => {
-      havok("HP_World_Step", [world, delta]);
+    updatePhysic: async (delta: number) => {
+      await havok("HP_World_Step", [world, delta]);
     },
   };
 }

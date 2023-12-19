@@ -11,12 +11,13 @@ export const createApp = async () => {
   const {
     renderWorld,
     physicWorld,
-    update: update3DBases,
+    updatePhysic: tickPhysicEngine,
+    updateEvents,
     render,
     mouseEvents,
   } = await create3DBases();
 
-  const updates: (() => void)[] = [];
+  const updatePhysicList: (() => void)[] = [];
 
   const getRandomRotation = () =>
     quaternion
@@ -30,18 +31,9 @@ export const createApp = async () => {
       )
       .toArray() as Quaternion;
 
-  // Ground
-  const { mesh: groundMesh } = await createGround({
-    physicWorld,
-    size: [20, 0.2, 20],
-    position: [0, 0, 0],
-    rotation: [0, 0, 0, 1],
-  });
-  renderWorld.scene.add(groundMesh);
-
   // Sphere
   for (let i = 0; i < 10; i++) {
-    const { mesh, update } = await createSphere({
+    const { mesh, updatePhysic } = await createSphere({
       physicWorld,
       position: [
         Math.random() * 2 - 1,
@@ -51,7 +43,7 @@ export const createApp = async () => {
       size: Math.random() / 10 + 0.1,
     });
     renderWorld.scene.add(mesh);
-    updates.push(update);
+    updatePhysicList.push(updatePhysic);
 
     mouseEvents.onOver(mesh, () => {
       renderWorld.renderer.domElement.style.cursor = "grab";
@@ -66,9 +58,18 @@ export const createApp = async () => {
     });
   }
 
+  // Ground
+  const { mesh: groundMesh } = await createGround({
+    physicWorld,
+    size: [20, 0.2, 20],
+    position: [0, 0, 0],
+    rotation: [0, 0, 0, 1],
+  });
+  renderWorld.scene.add(groundMesh);
+
   // Cards
   for (let i = 0; i < 5; i++) {
-    const { mesh: card, update } = await createCard({
+    const { mesh: card, updatePhysic } = await createCard({
       physicWorld,
       position: [
         Math.random() * 2 - 1,
@@ -90,12 +91,12 @@ export const createApp = async () => {
       renderWorld,
     });
     renderWorld.scene.add(card);
-    updates.push(update);
+    updatePhysicList.push(updatePhysic);
   }
 
   // Cube
   for (let i = 0; i < 100; i++) {
-    const { mesh, update } = await createCube({
+    const { mesh, updatePhysic } = await createCube({
       physicWorld,
       position: [
         Math.random() * 2 - 1,
@@ -110,22 +111,32 @@ export const createApp = async () => {
       rotation: getRandomRotation(),
     });
     renderWorld.scene.add(mesh);
-    updates.push(update);
+    updatePhysicList.push(updatePhysic);
   }
 
   renderWorld.renderer.setAnimationLoop(tick);
 
-  function tick(/* time: number */) {
-    // required if controls.enableDamping or controls.autoRotate are set to true
-    update3DBases();
-
-    // Ste the simulation forward.
-
-    // Get and print the rigid-body's position.
-    for (const update of updates) {
-      update();
-    }
-
+  async function tick(/* time: number */) {
+    updateEvents();
     render();
   }
+
+  let renderRAF: number;
+  let renderTime = Date.now();
+  const renderPhysic = async () => {
+    const time = Date.now();
+    const dt = time - renderTime;
+    renderTime = time;
+    cancelAnimationFrame(renderRAF);
+
+    // Get and print the rigid-body's position.
+    for (const update of updatePhysicList) {
+      await update();
+    }
+
+    // required if controls.enableDamping or controls.autoRotate are set to true
+    await tickPhysicEngine(dt);
+    requestAnimationFrame(renderPhysic);
+  };
+  renderPhysic();
 };

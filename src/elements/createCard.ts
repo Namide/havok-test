@@ -4,7 +4,6 @@ import { createDragElement } from "../physic/createDragElement";
 import { Quaternion, Vector3 } from "../physic/havok/HavokPhysics";
 import { PhysicWorld, RenderWorld } from "../render/create3DBases";
 import { getCheckerTexture } from "../render/textures";
-import { havokBash } from "../physic/havok/havokWorkerClient";
 
 export default async function createCard({
   physicWorld,
@@ -30,35 +29,26 @@ export default async function createCard({
       size,
     ])
   )[1];
-  await havokBash(
-    physicWorld.havok("HP_Body_SetShape", [body, box]),
-    physicWorld.havok("HP_Body_SetQTransform", [body, [position, rotation]]),
-    physicWorld.havok("HP_Body_SetMassProperties", [
-      body,
-      [
-        /* center of mass */ [0, 0, 0],
-        /* Mass */ 1,
-        /* Inertia for mass of 1*/ [1, 1, 1],
-        /* Inertia Orientation */ [0, 0, 0, 1],
-      ],
-    ]),
-    physicWorld.havok("HP_Body_SetMotionType", [body, "MotionType.DYNAMIC"]),
-    physicWorld.havok("HP_World_AddBody", [physicWorld.world, body, false]),
-  );
 
-  // physicWorld.havok.HP_Body_SetShape(
-  //   body,
-  //   physicWorld.havok.HP_Shape_CreateBox([0, 0, 0], [0, 0, 0, 1], size)[1],
-  // );
-  // physicWorld.havok.HP_Body_SetQTransform(body, [position, rotation]);
-  // physicWorld.havok.HP_Body_SetMassProperties(body, [
-  //   /* center of mass */ [0, 0, 0],
-  //   /* Mass */ 1,
-  //   /* Inertia for mass of 1*/ [1, 1, 1],
-  //   /* Inertia Orientation */ [0, 0, 0, 1],
-  // ]);
-  // physicWorld.havok.HP_Body_SetMotionType(body, physicWorld.havok.MotionType.DYNAMIC);
-  // physicWorld.havok.HP_World_AddBody(physicWorld.world, body, false);
+  await physicWorld.havok("HP_Body_SetShape", [body, box]);
+  await physicWorld.havok("HP_Body_SetQTransform", [
+    body,
+    [position, rotation],
+  ]);
+  await physicWorld.havok("HP_Body_SetMassProperties", [
+    body,
+    [
+      /* center of mass */ [0, 0, 0],
+      /* Mass */ 1,
+      /* Inertia for mass of 1*/ [1, 1, 1],
+      /* Inertia Orientation */ [0, 0, 0, 1],
+    ],
+  ]);
+  await physicWorld.havok("HP_Body_SetMotionType", [
+    body,
+    "MotionType.DYNAMIC",
+  ]);
+  await physicWorld.havok("HP_World_AddBody", [physicWorld.world, body, false]);
 
   // Render
   const map = await getCheckerTexture();
@@ -78,15 +68,16 @@ export default async function createCard({
   });
 
   // Update
-  const update = () => {
-    const [position, rotation] =
-      physicWorld.havok.HP_Body_GetQTransform(body)[1];
+  const updatePhysic = async () => {
+    const [position, rotation] = (
+      await physicWorld.havok("HP_Body_GetQTransform", [body])
+    )[1];
     mesh.position.set(...position);
     mesh.quaternion.set(...rotation);
   };
 
   return {
     mesh,
-    update,
+    updatePhysic,
   };
 }

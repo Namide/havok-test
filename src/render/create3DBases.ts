@@ -4,7 +4,7 @@ import { createMouseEvents } from "../events/createMouseEvents";
 import { createHavok } from "../physic/createHavok";
 
 export async function create3DBases() {
-  const { world, havok, update: updatePhysic } = await createHavok();
+  const { world, havok, updatePhysic: updateHavok } = await createHavok();
 
   const screenSize = {
     width: window.innerWidth,
@@ -39,11 +39,12 @@ export async function create3DBases() {
 
   window.addEventListener("resize", resize);
 
-  function update() {
-    const delta = clock.getDelta();
+  function updateEvents() {
     mouseEvents.testHover();
-    // controls.update();
-    updatePhysic(delta);
+  }
+
+  async function updatePhysic(delta: number) {
+    await updateHavok(delta);
   }
 
   function render() {
@@ -69,7 +70,8 @@ export async function create3DBases() {
       world,
     },
     mouseEvents,
-    update,
+    updateEvents,
+    updatePhysic,
     render,
   };
 }

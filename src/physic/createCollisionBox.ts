@@ -1,6 +1,5 @@
 import { PhysicWorld } from "../render/create3DBases";
 import { Quaternion, Vector3 } from "./havok/HavokPhysics";
-import { havokBash } from "./havok/havokWorkerClient";
 
 export const createCollisionBox = async ({
   physicWorld,
@@ -22,21 +21,25 @@ export const createCollisionBox = async ({
     ])
   )[1];
 
-  havokBash(
-    physicWorld.havok("HP_Body_SetShape", [body, shape]),
-    physicWorld.havok("HP_Body_SetQTransform", [body, [position, rotation]]),
-    physicWorld.havok("HP_Body_SetMassProperties", [
-      body,
-      [
-        /* center of mass */ [0, 0, 0],
-        /* Mass */ 1,
-        /* Inertia for mass of 1*/ [0.001, 0.001, 0.001],
-        /* Inertia Orientation */ [0, 0, 0, 1],
-      ],
-    ]),
-    physicWorld.havok("HP_World_AddBody", [physicWorld.world, body, false]),
-    physicWorld.havok("HP_Body_SetMotionType", [body, "MotionType.DYNAMIC"]),
-  );
+  await physicWorld.havok("HP_Body_SetShape", [body, shape]);
+  await physicWorld.havok("HP_Body_SetQTransform", [
+    body,
+    [position, rotation],
+  ]);
+  await physicWorld.havok("HP_Body_SetMassProperties", [
+    body,
+    [
+      /* center of mass */ [0, 0, 0],
+      /* Mass */ 1,
+      /* Inertia for mass of 1*/ [0.001, 0.001, 0.001],
+      /* Inertia Orientation */ [0, 0, 0, 1],
+    ],
+  ]);
+  await physicWorld.havok("HP_World_AddBody", [physicWorld.world, body, false]);
+  await physicWorld.havok("HP_Body_SetMotionType", [
+    body,
+    "MotionType.DYNAMIC",
+  ]);
 
   const getTransform = async () => {
     const [position, quaternion] = (

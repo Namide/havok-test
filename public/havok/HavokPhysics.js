@@ -2793,7 +2793,7 @@ onmessage = async function (event) {
     return param
   })
 
-  console.log("w:", event.data.name, ...params);
+  // console.log("w:", event.data.name, ...params);
   // console.log("Params:", params);
   const workerResult = havok[event.data.name](...params);
   // console.log("Posting message back to main script");

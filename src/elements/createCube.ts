@@ -31,7 +31,7 @@ export default async function createCube({
   const mesh = new THREE.Mesh(geometry, material);
 
   // Update
-  const update = async () => {
+  const updatePhysic = async () => {
     const { position, quaternion } = await getTransform();
     mesh.position.set(...position);
     mesh.quaternion.set(...quaternion);
@@ -39,6 +39,6 @@ export default async function createCube({
 
   return {
     mesh,
-    update,
+    updatePhysic,
   };
 }

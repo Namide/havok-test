@@ -28,12 +28,15 @@ export default async function createGround({
     await physicWorld.havok("HP_Shape_CreateBox", [[0, 0, 0], rotation, size])
   )[1];
 
-  havokBash(
-    physicWorld.havok("HP_Body_SetShape", [body, shape]),
-    physicWorld.havok("HP_Body_SetQTransform", [body, [position, rotation]]),
-    physicWorld.havok("HP_World_AddBody", [physicWorld.world, body, false]),
-    physicWorld.havok("HP_Body_SetMotionType", [body, "MotionType.STATIC"]),
-  );
+  // havokBash(
+  await physicWorld.havok("HP_Body_SetShape", [body, shape]);
+  await physicWorld.havok("HP_Body_SetQTransform", [
+    body,
+    [position, rotation],
+  ]);
+  await physicWorld.havok("HP_World_AddBody", [physicWorld.world, body, false]);
+  await physicWorld.havok("HP_Body_SetMotionType", [body, "MotionType.STATIC"]);
+  // );
 
   return {
     mesh,
