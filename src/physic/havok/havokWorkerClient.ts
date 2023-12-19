@@ -44,7 +44,6 @@ export const getHavok = () => {
   ): Promise<ReturnType<Havok[Key]>> => {
     // console.log("send to worker 1", name, params);
     return new Promise((resolve) => {
-      console.log("send to worker 2");
       havokWorker.onmessage = (
         returnedData: MessageEvent<ReturnType<Havok[Key]>>,
       ) => {

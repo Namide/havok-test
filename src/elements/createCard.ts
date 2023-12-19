@@ -4,7 +4,7 @@ import { createDragElement } from "../physic/createDragElement";
 import { Quaternion, Vector3 } from "../physic/havok/HavokPhysics";
 import { PhysicWorld, RenderWorld } from "../render/create3DBases";
 import { getCheckerTexture } from "../render/textures";
-import { getHavok, havokBash } from "../physic/havok/havokWorkerClient";
+import { havokBash } from "../physic/havok/havokWorkerClient";
 
 export default async function createCard({
   physicWorld,
@@ -22,15 +22,18 @@ export default async function createCard({
   mouseEvents: MouseEvents;
 }) {
   // Havok
-  const { havok } = getHavok();
-  const body = (await havok("HP_Body_Create", []))[1];
+  const body = (await physicWorld.havok("HP_Body_Create", []))[1];
   const box = (
-    await havok("HP_Shape_CreateBox", [[0, 0, 0], [0, 0, 0, 1], size])
+    await physicWorld.havok("HP_Shape_CreateBox", [
+      [0, 0, 0],
+      [0, 0, 0, 1],
+      size,
+    ])
   )[1];
   await havokBash(
-    havok("HP_Body_SetShape", [body, box]),
-    havok("HP_Body_SetQTransform", [body, [position, rotation]]),
-    havok("HP_Body_SetMassProperties", [
+    physicWorld.havok("HP_Body_SetShape", [body, box]),
+    physicWorld.havok("HP_Body_SetQTransform", [body, [position, rotation]]),
+    physicWorld.havok("HP_Body_SetMassProperties", [
       body,
       [
         /* center of mass */ [0, 0, 0],
@@ -39,23 +42,23 @@ export default async function createCard({
         /* Inertia Orientation */ [0, 0, 0, 1],
       ],
     ]),
-    havok("HP_Body_SetMotionType", [body, "MotionType.DYNAMIC"]),
-    havok("HP_World_AddBody", [physicWorld.world, body, false]),
+    physicWorld.havok("HP_Body_SetMotionType", [body, "MotionType.DYNAMIC"]),
+    physicWorld.havok("HP_World_AddBody", [physicWorld.world, body, false]),
   );
 
-  // havok.HP_Body_SetShape(
+  // physicWorld.havok.HP_Body_SetShape(
   //   body,
-  //   havok.HP_Shape_CreateBox([0, 0, 0], [0, 0, 0, 1], size)[1],
+  //   physicWorld.havok.HP_Shape_CreateBox([0, 0, 0], [0, 0, 0, 1], size)[1],
   // );
-  // havok.HP_Body_SetQTransform(body, [position, rotation]);
-  // havok.HP_Body_SetMassProperties(body, [
+  // physicWorld.havok.HP_Body_SetQTransform(body, [position, rotation]);
+  // physicWorld.havok.HP_Body_SetMassProperties(body, [
   //   /* center of mass */ [0, 0, 0],
   //   /* Mass */ 1,
   //   /* Inertia for mass of 1*/ [1, 1, 1],
   //   /* Inertia Orientation */ [0, 0, 0, 1],
   // ]);
-  // havok.HP_Body_SetMotionType(body, havok.MotionType.DYNAMIC);
-  // havok.HP_World_AddBody(physicWorld.world, body, false);
+  // physicWorld.havok.HP_Body_SetMotionType(body, physicWorld.havok.MotionType.DYNAMIC);
+  // physicWorld.havok.HP_World_AddBody(physicWorld.world, body, false);
 
   // Render
   const map = await getCheckerTexture();
@@ -76,7 +79,8 @@ export default async function createCard({
 
   // Update
   const update = () => {
-    const [position, rotation] = havok.HP_Body_GetQTransform(body)[1];
+    const [position, rotation] =
+      physicWorld.havok.HP_Body_GetQTransform(body)[1];
     mesh.position.set(...position);
     mesh.quaternion.set(...rotation);
   };

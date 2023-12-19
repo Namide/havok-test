@@ -2783,11 +2783,9 @@ onmessage = async function (event) {
     if (typeof param === 'string') {
       const items = param.split('.')
       if (items.length < 2) {
-        console.log(havok[param])
         return havok[param]
       }
       if (items.length < 3) {
-        console.log(havok[items[0]][items[1]])
         return havok[items[0]][items[1]]
       }
     }
