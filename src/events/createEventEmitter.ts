@@ -44,9 +44,14 @@ export function createEventEmitter<GlobalEventDef extends GlobalEvent>() {
     }
   }
 
+  function dispose() {
+    list = [];
+  }
+
   return {
     on,
     off,
     dispatch,
+    dispose,
   };
 }

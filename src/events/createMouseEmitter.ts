@@ -3,7 +3,7 @@ import { createEventEmitter } from "./createEventEmitter";
 
 export type MousePosition = { x: number; y: number };
 
-export async function createMouseEvents({
+export async function createMouseEmitter({
   screenSize,
   scene,
   camera,
@@ -19,7 +19,7 @@ export async function createMouseEvents({
 
   let meshOver: THREE.Object3D | undefined;
 
-  const { on, dispatch } = createEventEmitter<
+  const globalEmitter = createEventEmitter<
     | { name: "mouseover"; callback: (data: THREE.Object3D) => void }
     | { name: "mouseout"; callback: (data: THREE.Object3D) => void }
     | { name: "click"; callback: (data: THREE.Object3D) => void }
@@ -28,116 +28,95 @@ export async function createMouseEvents({
     | { name: "up"; callback: () => void }
   >();
 
-  const {
-    on: onOver,
-    off: offOver,
-    dispatch: dispatchOver,
-  } = createEventEmitter<{
+  const over = createEventEmitter<{
     name: THREE.Object3D;
     callback: (data: THREE.Object3D) => void;
   }>();
 
-  const {
-    on: onOut,
-    off: offOut,
-    dispatch: dispatchOut,
-  } = createEventEmitter<{
+  const out = createEventEmitter<{
     name: THREE.Object3D;
     callback: (data: THREE.Object3D) => void;
   }>();
 
-  const {
-    on: onMove,
-    off: offMove,
-    dispatch: dispatchMove,
-  } = createEventEmitter<{
+  const move = createEventEmitter<{
     name: undefined;
     callback: (data: MousePosition) => void;
   }>();
 
-  const {
-    on: onClick,
-    off: offClick,
-    dispatch: dispatchClick,
-  } = createEventEmitter<{
+  const click = createEventEmitter<{
     name: THREE.Object3D;
     callback: (data: THREE.Object3D) => void;
   }>();
 
-  const {
-    on: onDown,
-    off: offDown,
-    dispatch: dispatchDown,
-  } = createEventEmitter<{
+  const down = createEventEmitter<{
     name: THREE.Object3D;
     callback: (data: THREE.Object3D) => void;
   }>();
 
-  const {
-    on: onUp,
-    off: offUp,
-    dispatch: dispatchUp,
-  } = createEventEmitter<{ name: undefined; callback: () => void }>();
+  const up = createEventEmitter<{
+    name: undefined;
+    callback: () => void;
+  }>();
 
-  on("mouseover", (obj: THREE.Object3D) => {
-    dispatchOver(obj, obj);
+  globalEmitter.on("mouseover", (obj: THREE.Object3D) => {
+    over.dispatch(obj, obj);
   });
 
-  on("mouseout", (obj: THREE.Object3D) => {
-    dispatchOut(obj, obj);
+  globalEmitter.on("mouseout", (obj: THREE.Object3D) => {
+    out.dispatch(obj, obj);
   });
 
-  on("click", (obj: THREE.Object3D) => {
-    dispatchClick(obj, obj);
+  globalEmitter.on("click", (obj: THREE.Object3D) => {
+    click.dispatch(obj, obj);
   });
 
-  on("down", (obj: THREE.Object3D) => {
-    dispatchDown(obj, obj);
+  globalEmitter.on("down", (obj: THREE.Object3D) => {
+    down.dispatch(obj, obj);
   });
 
-  on("up", () => {
-    dispatchUp(undefined);
+  globalEmitter.on("up", () => {
+    up.dispatch(undefined);
   });
 
-  on("move", (position: MousePosition) => {
-    dispatchMove(undefined, position);
+  globalEmitter.on("move", (position: MousePosition) => {
+    move.dispatch(undefined, position);
   });
 
-  window.addEventListener("mousemove", move);
-  canvas.addEventListener("click", click);
-  canvas.addEventListener("mousedown", down);
-  window.addEventListener("mouseup", up);
-  window.addEventListener("mouseleave", up);
-  // canvas.addEventListener("pointerdown", down);
-  // window.addEventListener("pointerup", up);
-  // window.addEventListener("pointerleave", up);
+  window.addEventListener("mousemove", onMove);
+  canvas.addEventListener("click", onClick);
+  canvas.addEventListener("mousedown", onDown);
+  window.addEventListener("mouseup", onUp);
+  window.addEventListener("mouseleave", onUp);
+  // canvas.addEventListener("pointerdown", onDown);
+  // window.addEventListener("pointerup", onUp);
+  // window.addEventListener("pointerleave", onUp);
 
-  function down(event: MouseEvent) {
+  function onDown() {
     // event.preventDefault();
     // event.stopPropagation();
     raycaster.setFromCamera(position, camera);
     const object3D = raycaster.intersectObject(scene, true)?.[0]?.object;
     if (object3D) {
-      dispatch("down", object3D);
+      globalEmitter.dispatch("down", object3D);
     }
   }
 
-  function up() {
-    dispatch("up");
+  function onUp() {
+    globalEmitter.dispatch("up");
   }
 
-  function click() {
+  function onClick() {
     raycaster.setFromCamera(position, camera);
     const object3D = raycaster.intersectObject(scene, true)?.[0]?.object;
     if (object3D) {
-      dispatch("click", object3D);
+      globalEmitter.dispatch("click", object3D);
     }
   }
 
-  function move(event: MouseEvent) {
+  function onMove(event: MouseEvent) {
     position.x = (event.clientX / screenSize.width) * 2 - 1;
     position.y = -(event.clientY / screenSize.height) * 2 + 1;
-    dispatch("move", position);
+    globalEmitter.dispatch("move", position);
   }
 
   function testHover() {
@@ -146,34 +125,39 @@ export async function createMouseEvents({
 
     if (object3D !== meshOver) {
       if (meshOver) {
-        dispatch("mouseout", meshOver);
+        globalEmitter.dispatch("mouseout", meshOver);
       }
 
       meshOver = object3D;
       if (object3D) {
-        dispatch("mouseover", meshOver);
+        globalEmitter.dispatch("mouseover", meshOver);
       }
     }
 
     return object3D;
   }
 
+  function dispose() {
+    globalEmitter.dispose();
+    over.dispose();
+    move.dispose();
+    click.dispose();
+    up.dispose();
+    down.dispose();
+    out.dispose();
+  }
+
   return {
-    testHover,
-    onOver,
-    offOver,
-    onOut,
-    offOut,
-    onClick,
-    offClick,
-    onDown,
-    offDown,
-    onUp,
-    offUp,
-    onMove,
-    offMove,
     position,
+    testHover,
+    over,
+    out,
+    click,
+    down,
+    up,
+    move,
+    dispose,
   };
 }
 
-export type MouseEvents = Awaited<ReturnType<typeof createMouseEvents>>;
+export type MouseEmitter = Awaited<ReturnType<typeof createMouseEmitter>>;

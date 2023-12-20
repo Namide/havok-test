@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { MouseEvents } from "../events/createMouseEvents";
+import type { MouseEmitter } from "../events/createMouseEmitter";
 import { createDragElement } from "../physic/createDragElement";
 import { getHavok } from "../physic/getHavok";
 import { Quaternion, Vector3 } from "../physic/havok/HavokPhysics";
@@ -11,7 +11,7 @@ export default async function createCard({
   position,
   rotation,
   size,
-  mouseEvents,
+  mouseEmitter,
   renderWorld,
 }: {
   physicWorld: PhysicWorld;
@@ -19,7 +19,7 @@ export default async function createCard({
   position: Vector3;
   rotation: Quaternion;
   size: Vector3;
-  mouseEvents: MouseEvents;
+  mouseEmitter: MouseEmitter;
 }) {
   // Havok
   const havok = await getHavok();
@@ -51,7 +51,7 @@ export default async function createCard({
     body,
     physicWorld,
     mesh,
-    mouseEvents,
+    mouseEmitter,
     renderWorld,
   });
 

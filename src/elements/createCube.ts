@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { createCollisionBox } from "../physic/createCollisionBox";
-import { HP_WorldId, Quaternion, Vector3 } from "../physic/havok/HavokPhysics";
+import { Quaternion, Vector3 } from "../physic/havok/HavokPhysics";
 import { PhysicWorld } from "../render/create3DBases";
 import { getCheckerTexture } from "../render/textures";
 

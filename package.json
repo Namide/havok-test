@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite --host",
     "build": "tsc && vite build",
+    "type": "tsc",
     "preview": "vite preview",
     "lint": "biome lint ./src",
     "lint:fix": "biome check --apply-unsafe ./src"

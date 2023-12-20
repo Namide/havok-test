@@ -25,6 +25,14 @@ lint:
 		node:slim \
 		npm run lint
 
+type:
+	docker run -ti --rm \
+		-v $(shell pwd):/usr/src/app \
+		-w /usr/src/app \
+		-u "node" \
+		node:slim \
+		npm run type
+
 lint-fix:
 	docker run -ti --rm \
 		-v $(shell pwd):/usr/src/app \

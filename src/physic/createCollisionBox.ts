@@ -1,6 +1,6 @@
 import { PhysicWorld } from "../render/create3DBases";
 import { getHavok } from "./getHavok";
-import { HP_WorldId, Quaternion, Vector3 } from "./havok/HavokPhysics";
+import { Quaternion, Vector3 } from "./havok/HavokPhysics";
 
 export const createCollisionBox = async ({
   physicWorld,

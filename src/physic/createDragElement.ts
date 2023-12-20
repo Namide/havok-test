@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { DynamicTween, easeInOutExpo } from "twon";
 import { euler, quaternion } from "../constants";
-import { MouseEvents, MousePosition } from "../events/createMouseEvents";
+import { MouseEmitter, MousePosition } from "../events/createMouseEmitter";
 import { PhysicWorld, RenderWorld } from "../render/create3DBases";
 import { getHavok } from "./getHavok";
 import { HP_BodyId, QTransform, Vector3 } from "./havok/HavokPhysics";
@@ -9,14 +9,14 @@ import { HP_BodyId, QTransform, Vector3 } from "./havok/HavokPhysics";
 export const createDragElement = async ({
   renderWorld,
   mesh,
-  mouseEvents,
+  mouseEmitter,
   body,
 }: {
   physicWorld: PhysicWorld;
   renderWorld: RenderWorld;
   mesh: THREE.Mesh;
   body: HP_BodyId;
-  mouseEvents: MouseEvents;
+  mouseEmitter: MouseEmitter;
 }) => {
   const havok = await getHavok();
   // let parent: HP_BodyId | undefined;
@@ -77,7 +77,7 @@ export const createDragElement = async ({
   };
 
   const applyVelocity = () => {
-    const dt = (Date.now() - transform.oldTime) / 1000;
+    const dt = ((Date.now() - transform.oldTime) * 5) / 1000;
     console.log(
       "Why 0?",
       dt,
@@ -132,8 +132,8 @@ export const createDragElement = async ({
   };
 
   const onUpCallback = () => {
-    mouseEvents.offUp(undefined, onUpCallback);
-    mouseEvents.offMove(undefined, onMoveCallback);
+    mouseEmitter.up.off(undefined, onUpCallback);
+    mouseEmitter.move.off(undefined, onMoveCallback);
     cancelAnimationFrame(updatePositionRAF);
 
     if (tween) {
@@ -146,7 +146,6 @@ export const createDragElement = async ({
 
   const onUpdatePosition = () => {
     cancelAnimationFrame(updatePositionRAF);
-    console.log("update");
     refreshPosition();
     updatePositionRAF = requestAnimationFrame(onUpdatePosition);
   };
@@ -165,27 +164,22 @@ export const createDragElement = async ({
       transform.currentAngle = rotation;
     }
     const qTransform = [position.toArray(), rotation.toArray()] as QTransform;
-    console.log(
-      "refresh",
-      transform.currentPosition.toArray(),
-      transform.oldPosition.toArray(),
-    );
     havok.HP_Body_SetQTransform(body, qTransform);
   };
 
-  mouseEvents.onDown(mesh, () => {
+  mouseEmitter.down.on(mesh, () => {
     const initPosition = mesh.position;
     const initRotation = mesh.quaternion;
     endPosition = screenPointTo3DPoint({
-      mousePosition: mouseEvents.position,
+      mousePosition: mouseEmitter.position,
       camera: renderWorld.camera,
       distance: DISTANCE,
     });
 
     havok.HP_Body_SetMotionType(body, havok.MotionType.STATIC);
 
-    mouseEvents.onMove(undefined, onMoveCallback);
-    mouseEvents.onUp(undefined, onUpCallback);
+    mouseEmitter.move.on(undefined, onMoveCallback);
+    mouseEmitter.up.on(undefined, onUpCallback);
 
     tween = new DynamicTween(0 as number, {
       ease: easeInOutExpo,
@@ -194,12 +188,6 @@ export const createDragElement = async ({
       .to(1)
       .on("update", (value: number) => {
         if (tween) {
-          console.log(
-            "tween",
-            initPosition
-              .lerpVectors(initPosition, endPosition, value)
-              .toArray(),
-          );
           refreshPosition(
             initPosition.lerpVectors(initPosition, endPosition, value),
             initRotation.slerpQuaternions(initRotation, endRotation, value),

@@ -13,7 +13,7 @@ export const createApp = async () => {
     physicWorld,
     update: update3DBases,
     render,
-    mouseEvents,
+    mouseEmitter,
   } = await create3DBases();
 
   const updates: (() => void)[] = [];
@@ -53,15 +53,15 @@ export const createApp = async () => {
     renderWorld.scene.add(mesh);
     updates.push(update);
 
-    mouseEvents.onOver(mesh, (target) => {
+    mouseEmitter.over.on(mesh, () => {
       renderWorld.renderer.domElement.style.cursor = "grab";
     });
 
-    mouseEvents.onOut(mesh, (target) => {
+    mouseEmitter.out.on(mesh, () => {
       renderWorld.renderer.domElement.style.cursor = "auto";
     });
 
-    mouseEvents.onClick(mesh, (target) => {
+    mouseEmitter.click.on(mesh, (target) => {
       console.log("click:", target);
     });
   }
@@ -86,7 +86,7 @@ export const createApp = async () => {
         )
         .toArray() as Quaternion,
       size: [1, 3 / 2, 0.01],
-      mouseEvents,
+      mouseEmitter,
       renderWorld,
     });
     renderWorld.scene.add(card);
