@@ -96,6 +96,7 @@ export const createApp = async () => {
   // Cube
   for (let i = 0; i < 100; i++) {
     const { mesh, update } = await createCube({
+      renderWorld,
       physicWorld,
       position: [
         Math.random() * 2 - 1,
@@ -108,6 +109,7 @@ export const createApp = async () => {
         Math.random() / 4 + 0.05,
       ],
       rotation: getRandomRotation(),
+      mouseEmitter,
     });
     renderWorld.scene.add(mesh);
     updates.push(update);

@@ -1,21 +1,27 @@
 import * as THREE from "three";
 import { createCollisionBox } from "../physic/createCollisionBox";
 import { Quaternion, Vector3 } from "../physic/havok/HavokPhysics";
-import { PhysicWorld } from "../render/create3DBases";
+import { PhysicWorld, RenderWorld } from "../render/create3DBases";
 import { getCheckerTexture } from "../render/textures";
+import { createDragElement } from "../physic/createDragElement";
+import { MouseEmitter } from "../events/createMouseEmitter";
 
 export default async function createCube({
   physicWorld,
+  renderWorld,
   position,
   rotation,
   size,
+  mouseEmitter,
 }: {
   physicWorld: PhysicWorld;
+  renderWorld: RenderWorld;
   position: Vector3;
   rotation: Quaternion;
   size: Vector3;
+  mouseEmitter: MouseEmitter;
 }) {
-  const { getTransform } = await createCollisionBox({
+  const { getTransform, body } = await createCollisionBox({
     physicWorld,
     position,
     rotation,
@@ -29,6 +35,16 @@ export default async function createCube({
   });
   const geometry = new THREE.BoxGeometry(...size);
   const mesh = new THREE.Mesh(geometry, material);
+
+  // Drag and drop
+  await createDragElement({
+    body,
+    physicWorld,
+    mesh,
+    mouseEmitter,
+    renderWorld,
+    autoRotate: false,
+  });
 
   // Update
   const update = () => {

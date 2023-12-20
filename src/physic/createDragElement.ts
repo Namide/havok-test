@@ -11,12 +11,14 @@ export const createDragElement = async ({
   mesh,
   mouseEmitter,
   body,
+  autoRotate = true,
 }: {
   physicWorld: PhysicWorld;
   renderWorld: RenderWorld;
   mesh: THREE.Mesh;
   body: HP_BodyId;
   mouseEmitter: MouseEmitter;
+  autoRotate?: boolean;
 }) => {
   const havok = await getHavok();
   // let parent: HP_BodyId | undefined;
@@ -33,40 +35,11 @@ export const createDragElement = async ({
     currentAngle: mesh.quaternion,
   };
 
-  // let oldPosition: THREE.Vector3;
-  // let currentPosition: THREE.Vector3;
-  // let oldTime: number;
   let endPosition: THREE.Vector3;
   let updatePositionRAF: number;
-
-  // const dragPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 4);
-
-  // const finalRotation = quaternion
-  //   .setFromEuler(euler.set(Math.PI / 2, 0, Math.PI / 2), true)
-  //   .toArray() as Quaternion;
-
-  // const endRotation = quaternion
-  //   .setFromEuler(euler.set(Math.PI / 2, 0, Math.PI / 2), true)
-  //   .clone();
-
-  // const endRotation = quaternion
-  //   .setFromEuler(
-  //     euler.setFromVector3(
-  //       renderWorld.camera
-  //         .getWorldDirection(vector3)
-  //         .applyEuler(euler.set(Math.PI / 2, 0, Math.PI / 2)),
-
-  //       // vector3
-  //       //   .set(0, 0, 0)
-  //       //   .applyEuler(
-  //       //     euler.setFromVector3(renderWorld.camera.getWorldDirection(vector3)),
-  //       //   ),
-  //     ),
-  //     true,
-  //   )
-  //   .clone();
-
-  const endRotation = quaternion.copy(renderWorld.camera.quaternion).clone();
+  const endRotation = autoRotate
+    ? quaternion.copy(renderWorld.camera.quaternion).clone()
+    : new THREE.Quaternion();
 
   const onMoveCallback = (mousePosition: MousePosition) => {
     endPosition = screenPointTo3DPoint({
@@ -170,11 +143,16 @@ export const createDragElement = async ({
   mouseEmitter.down.on(mesh, () => {
     const initPosition = mesh.position;
     const initRotation = mesh.quaternion;
+
     endPosition = screenPointTo3DPoint({
       mousePosition: mouseEmitter.position,
       camera: renderWorld.camera,
       distance: DISTANCE,
     });
+
+    if (!autoRotate) {
+      endRotation.setFromEuler(mesh.rotation);
+    }
 
     havok.HP_Body_SetMotionType(body, havok.MotionType.STATIC);
 
