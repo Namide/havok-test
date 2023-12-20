@@ -26,20 +26,11 @@ export const createDragElement = async ({
   autoRotate?: boolean;
 }) => {
   const havok = await getHavok();
-  // let parent: HP_BodyId | undefined;
+
   let tween: DynamicTween<number> | undefined;
 
-  const DISTANCE = 0;
+  const DISTANCE = 0.5;
   const VELOCITY_DURATION = 250;
-
-  // const transform = {
-  //   oldTime: 0,
-  //   currentTime: 0,
-  //   oldPosition: mesh.position.clone(),
-  //   currentPosition: mesh.position,
-  //   oldAngle: mesh.quaternion.clone(),
-  //   currentAngle: mesh.quaternion,
-  // };
 
   let transformHistory = [
     {
@@ -68,24 +59,16 @@ export const createDragElement = async ({
     const oldTransform = transformHistory.shift();
     if (newTransform && oldTransform) {
       const dt = ((newTransform.time - oldTransform.time) * 10) / 1000;
-      console.log("Why 0?", dt);
 
       const linearVelocity = vector3
         .set(...newTransform.position)
         .clone()
         .sub(vector3.set(...oldTransform.position))
         .multiplyScalar(dt);
-      // const angularVelocity = transform.currentAngle
-      //   .sub(transform.oldAngle)
-      //   .multiplyScalar(dt);
-      // const angularVelocity = havok.HP_Body_GetAngularVelocity(body)[1];
+
       havok.HP_Body_SetMotionType(body, havok.MotionType.DYNAMIC);
 
-      havok.HP_Body_SetLinearVelocity(
-        body,
-        // [0, 0, 0],
-        linearVelocity.toArray(),
-      );
+      havok.HP_Body_SetLinearVelocity(body, linearVelocity.toArray());
 
       const angularVelocity = quaternion
         .set(...newTransform.rotation)
@@ -96,14 +79,6 @@ export const createDragElement = async ({
       angularVelocity.z *= dt;
       angularVelocity.w *= dt;
 
-      console.log(
-        "vel:",
-        linearVelocity.toArray(),
-        "ang:",
-        euler.setFromQuaternion(angularVelocity).toArray(),
-      );
-
-      // .multiplyScalar(dt);
       havok.HP_Body_SetAngularVelocity(
         body,
         euler.setFromQuaternion(angularVelocity).toArray().slice(0, 3) as [
@@ -112,13 +87,6 @@ export const createDragElement = async ({
           number,
         ] as Vector3,
       );
-
-      // console.log(linearVelocity.toArray());
-
-      // havok.HP_Body_SetAngularVelocity(
-      //   body,
-      //   angularVelocity.map((val) => val * 100) as Vector3,
-      // );
     }
     transformHistory = [];
   };
