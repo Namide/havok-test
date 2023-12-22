@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import { Rapier, getRAPIER } from "../physic/rapier";
 import { euler, quaternion } from '../constants';
-import { Tween } from "twon"
 import type { create3DBases } from './create3DBases';
 
 export default async function createCard ({
