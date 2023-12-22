@@ -17,6 +17,15 @@ dev:
 		node:slim \
 		npm run dev
 
+debug:
+	docker run -ti --rm \
+		-v $(shell pwd):/usr/src/app \
+		-w /usr/src/app \
+		-p 8081\:5173 \
+		-u "node" \
+		node:slim \
+		npm run dev
+
 lint:
 	docker run -ti --rm \
 		-v $(shell pwd):/usr/src/app \
