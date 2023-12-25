@@ -23,7 +23,7 @@ export const createCollisionBox = async ({
   havok.HP_Body_SetMassProperties(body, [
     /* center of mass */ [0, 0, 0],
     /* Mass */ 1,
-    /* Inertia for mass of 1*/ [0.001, 0.001, 0.001],
+    /* Inertia for mass of 1*/ [0.1, 0.1, 0.1],
     /* Inertia Orientation */ [0, 0, 0, 1],
   ]);
   havok.HP_World_AddBody(physicWorld.world, body, false);

@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { SHADOW } from "../config";
 import type { MouseEmitter } from "../events/createMouseEmitter";
 import { createDragElement } from "../physic/createDragElement";
 import { getHavok } from "../physic/getHavok";
@@ -40,11 +41,15 @@ export default async function createCard({
 
   // Render
   const map = await getCheckerTexture();
-  const material = new THREE.MeshBasicMaterial({
+  const material = new THREE.MeshLambertMaterial({
     map,
   });
   const geometry = new THREE.BoxGeometry(...size);
   const mesh = new THREE.Mesh(geometry, material);
+  if (SHADOW) {
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+  }
 
   // Drag and drop
   await createDragElement({

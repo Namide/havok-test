@@ -17,6 +17,16 @@ dev:
 		node:slim \
 		npm run dev
 
+preview:
+	(sleep 4 && python3 -m webbrowser http://localhost:8082) &
+	docker run -ti --rm \
+		-v $(shell pwd):/usr/src/app \
+		-w /usr/src/app \
+		-p 8082\:5173 \
+		-u "node" \
+		node:slim \
+		npm run preview
+
 debug:
 	docker run -ti --rm \
 		-v $(shell pwd):/usr/src/app \

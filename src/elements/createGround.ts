@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { SHADOW } from "../config";
 import { getHavok } from "../physic/getHavok";
 import { Quaternion, Vector3 } from "../physic/havok/HavokPhysics";
 import { PhysicWorld } from "../render/create3DBases";
@@ -16,11 +17,14 @@ export default async function createGround({
   size: Vector3;
 }) {
   const map = await getCheckerTexture();
-  const material = new THREE.MeshBasicMaterial({
+  const material = new THREE.MeshLambertMaterial({
     map,
   });
   const geometry = new THREE.BoxGeometry(...size);
   const mesh = new THREE.Mesh(geometry, material);
+  if (SHADOW) {
+    mesh.receiveShadow = true;
+  }
 
   // Havok
   const havok = await getHavok();

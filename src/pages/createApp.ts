@@ -6,6 +6,10 @@ import createSphere from "../elements/createSphere";
 import { Quaternion } from "../physic/havok/HavokPhysics";
 import { create3DBases } from "../render/create3DBases";
 
+const GROUND_SIZE = 20;
+
+const rand = (max: number, min = 0) => Math.random() * (max - min) + min;
+
 // Rapier example https://github.com/viridia/demo-rapier-three/tree/main
 export const createApp = async () => {
   const {
@@ -21,11 +25,7 @@ export const createApp = async () => {
   const getRandomRotation = () =>
     quaternion
       .setFromEuler(
-        euler.set(
-          Math.random() * 2 * Math.PI,
-          Math.random() * 2 * Math.PI,
-          Math.random() * 2 * Math.PI,
-        ),
+        euler.set(rand(2 * Math.PI), rand(2 * Math.PI), rand(2 * Math.PI)),
         true,
       )
       .toArray() as Quaternion;
@@ -33,7 +33,7 @@ export const createApp = async () => {
   // Ground
   const { mesh: groundMesh } = await createGround({
     physicWorld,
-    size: [20, 0.2, 20],
+    size: [GROUND_SIZE, GROUND_SIZE / 10, GROUND_SIZE],
     position: [0, 0, 0],
     rotation: [0, 0, 0, 1],
   });
@@ -43,12 +43,8 @@ export const createApp = async () => {
   for (let i = 0; i < 10; i++) {
     const { mesh, update } = await createSphere({
       physicWorld,
-      position: [
-        Math.random() * 2 - 1,
-        Math.random() * 4 + 2,
-        Math.random() * 2 - 1,
-      ],
-      size: Math.random() / 10 + 0.1,
+      position: [rand(1, -1), rand(2, -2), rand(1, -1)],
+      size: rand(0.2, 0.1),
     });
     renderWorld.scene.add(mesh);
     updates.push(update);
@@ -70,18 +66,10 @@ export const createApp = async () => {
   for (let i = 0; i < 5; i++) {
     const { mesh: card, update } = await createCard({
       physicWorld,
-      position: [
-        Math.random() * 2 - 1,
-        Math.random() * 4 + 2,
-        Math.random() * 2 - 1,
-      ],
+      position: [rand(1, -1), rand(2, -2), rand(1, -1)],
       rotation: quaternion
         .setFromEuler(
-          euler.set(
-            Math.random() * 2 * Math.PI,
-            Math.random() * 2 * Math.PI,
-            Math.random() * 2 * Math.PI,
-          ),
+          euler.set(rand(2 * Math.PI), rand(2 * Math.PI), rand(2 * Math.PI)),
           true,
         )
         .toArray() as Quaternion,
@@ -99,15 +87,11 @@ export const createApp = async () => {
       renderWorld,
       physicWorld,
       position: [
-        Math.random() * 2 - 1,
-        Math.random() * 4 + 2,
-        Math.random() * 2 - 1,
+        rand(GROUND_SIZE * 0.48, -GROUND_SIZE * 0.48),
+        rand(4, 2),
+        rand(GROUND_SIZE * 0.48, -GROUND_SIZE * 0.48),
       ],
-      size: [
-        Math.random() / 4 + 0.05,
-        Math.random() / 4 + 0.05,
-        Math.random() / 4 + 0.05,
-      ],
+      size: [rand(1, 0.2), rand(1, 0.2), rand(1, 0.2)],
       rotation: getRandomRotation(),
       mouseEmitter,
     });

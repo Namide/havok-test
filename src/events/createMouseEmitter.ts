@@ -28,6 +28,11 @@ export async function createMouseEmitter({
     | { name: "up"; callback: () => void }
   >();
 
+  const drag = createEventEmitter<{
+    name: "start" | "stop";
+    callback: () => void;
+  }>();
+
   const over = createEventEmitter<{
     name: THREE.Object3D;
     callback: (data: THREE.Object3D) => void;
@@ -150,6 +155,7 @@ export async function createMouseEmitter({
   return {
     position,
     testHover,
+    drag,
     over,
     out,
     click,

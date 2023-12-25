@@ -10,6 +10,7 @@ import {
   Quaternion,
   Vector3,
 } from "./havok/HavokPhysics";
+import { DRAG_DISTANCE } from "../config";
 
 export const createDragElement = async ({
   renderWorld,
@@ -29,7 +30,6 @@ export const createDragElement = async ({
 
   let tween: DynamicTween<number> | undefined;
 
-  const DISTANCE = 0.5;
   const VELOCITY_DURATION = 250;
 
   let transformHistory = [
@@ -50,7 +50,7 @@ export const createDragElement = async ({
     endPosition = screenPointTo3DPoint({
       mousePosition,
       camera: renderWorld.camera,
-      distance: DISTANCE,
+      distance: DRAG_DISTANCE,
     });
   };
 
@@ -94,6 +94,7 @@ export const createDragElement = async ({
   const onUpCallback = () => {
     mouseEmitter.up.off(undefined, onUpCallback);
     mouseEmitter.move.off(undefined, onMoveCallback);
+    mouseEmitter.drag.dispatch("stop");
     cancelAnimationFrame(updatePositionRAF);
 
     if (tween) {
@@ -133,13 +134,14 @@ export const createDragElement = async ({
   };
 
   mouseEmitter.down.on(mesh, () => {
+    mouseEmitter.drag.dispatch("start");
     const initPosition = mesh.position;
     const initRotation = mesh.quaternion;
 
     endPosition = screenPointTo3DPoint({
       mousePosition: mouseEmitter.position,
       camera: renderWorld.camera,
-      distance: DISTANCE,
+      distance: DRAG_DISTANCE,
     });
 
     if (!autoRotate) {

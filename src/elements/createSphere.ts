@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { SHADOW } from "../config";
 import { createCollisionSphere } from "../physic/createCollisionSphere";
 import { Vector3 } from "../physic/havok/HavokPhysics";
 import { PhysicWorld } from "../render/create3DBases";
@@ -22,11 +23,15 @@ export default async function createSphere({
 
   // Render
   const map = await getCheckerTexture();
-  const material = new THREE.MeshBasicMaterial({
+  const material = new THREE.MeshLambertMaterial({
     map,
   });
   const geometry = new THREE.SphereGeometry(size);
   const mesh = new THREE.Mesh(geometry, material);
+  if (SHADOW) {
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+  }
 
   // Update
   const update = () => {

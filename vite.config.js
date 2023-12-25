@@ -1,7 +1,8 @@
 import { defineConfig } from 'vite'
+import glsl from 'vite-plugin-glsl';
 
 export default defineConfig({
-  plugins: [],
+  plugins: [glsl()],
   build: {
     rollupOptions: {
       output: {
@@ -9,9 +10,9 @@ export default defineConfig({
           console.log(id);
           if (id.includes('three')) {
             return 'render';
-          } else {
-            return 'index';
           }
+
+          return 'index';
         },
       },
     },

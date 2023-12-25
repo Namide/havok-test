@@ -1,10 +1,11 @@
 import * as THREE from "three";
+import { SHADOW } from "../config";
+import { MouseEmitter } from "../events/createMouseEmitter";
 import { createCollisionBox } from "../physic/createCollisionBox";
+import { createDragElement } from "../physic/createDragElement";
 import { Quaternion, Vector3 } from "../physic/havok/HavokPhysics";
 import { PhysicWorld, RenderWorld } from "../render/create3DBases";
 import { getCheckerTexture } from "../render/textures";
-import { createDragElement } from "../physic/createDragElement";
-import { MouseEmitter } from "../events/createMouseEmitter";
 
 export default async function createCube({
   physicWorld,
@@ -30,11 +31,15 @@ export default async function createCube({
 
   // Render
   const map = await getCheckerTexture();
-  const material = new THREE.MeshBasicMaterial({
+  const material = new THREE.MeshLambertMaterial({
     map,
   });
   const geometry = new THREE.BoxGeometry(...size);
   const mesh = new THREE.Mesh(geometry, material);
+  if (SHADOW) {
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+  }
 
   // Drag and drop
   await createDragElement({
