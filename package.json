@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
+    "pages": "BASE=/havok-test/ vite build",
     "type": "tsc",
     "preview": "vite preview --host --port 5173",
     "lint": "biome lint ./src",

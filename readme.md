@@ -1,22 +1,18 @@
 # Havok test
 
 Test to implement Havok WASM Javascript version.  
-With drag'n drop support.
-
-## Requierement
-
-- Docker
-- Make
+With drag'n drop support.  
+[namide.github.io/havok-test](https://namide.github.io/havok-test/)
 
 ## Commands
 
 ```bash
 # Install all dependencies
-make install
+npm run install
 
 # Run dev environment
-make dev
+npm run dev
 
-# Run container with NPM and Node dependencies
-make code
+# Build bundle
+npm run build
 ```

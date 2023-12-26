@@ -11,6 +11,7 @@
 		"rules": {
 			"recommended": true
 		},
-		"ignore": ["./src/physic/havok/*"]
+		"ignore": ["./src/physic/havok/*"],
+		"include": ["./*"]
 	}
 }

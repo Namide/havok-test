@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { DynamicTween, easeInOutExpo } from "twon";
+import { DRAG_DISTANCE } from "../config";
 import { euler, quaternion, vector3 } from "../constants";
 import { MouseEmitter, MousePosition } from "../events/createMouseEmitter";
 import { PhysicWorld, RenderWorld } from "../render/create3DBases";
@@ -10,7 +11,6 @@ import {
   Quaternion,
   Vector3,
 } from "./havok/HavokPhysics";
-import { DRAG_DISTANCE } from "../config";
 
 export const createDragElement = async ({
   renderWorld,

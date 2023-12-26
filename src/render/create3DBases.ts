@@ -1,10 +1,10 @@
 import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/Addons.js";
+import { DEBUG, ORBIT_CONTROL, SHADOW, SOFT_SHADOW } from "../config";
 import { createMouseEmitter } from "../events/createMouseEmitter";
 import { createHavok } from "../physic/createHavok";
-import { ORBIT_CONTROL, SOFT_SHADOW, SHADOW, DEBUG } from "../config";
-import pcssGetShadowFragment from "./pcssGetShadow.fragment.glsl";
 import pcssFragment from "./pcss.fragment.glsl";
-import { OrbitControls } from "three/examples/jsm/Addons.js";
+import pcssGetShadowFragment from "./pcssGetShadow.fragment.glsl";
 
 // Soft shadows
 // https://github.com/mrdoob/three.js/blob/master/examples/webgl_shadowmap_pcss.html
