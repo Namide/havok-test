@@ -4,7 +4,9 @@ let checkerTexture: THREE.Texture;
 
 export const getCheckerTexture = async () => {
   if (!checkerTexture) {
-    checkerTexture = await loadTexture("assets/checker-map.webp");
+    checkerTexture = await loadTexture(
+      `${import.meta.env.BASE_URL}assets/checker-map.webp`,
+    );
   }
   return checkerTexture;
 };
