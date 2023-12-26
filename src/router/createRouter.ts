@@ -8,8 +8,8 @@ export const createRouter = () => {
     {
       title: "Damien Doussaud",
       name: "landing",
-      path: "/",
-      regex: /^\/$/,
+      path: `${import.meta.env.BASE_URL}`,
+      regex: new RegExp(`^${import.meta.env.BASE_URL.replace(/\//, "/")}$`),
     },
     {
       title: "Page not found",
