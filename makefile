@@ -75,3 +75,11 @@ build:
 		-u "node" \
 		node:slim \
 		npm run build
+
+pages:
+	docker run -ti --rm \
+		-v $(shell pwd):/usr/src/app \
+		-w /usr/src/app \
+		-u "node" \
+		node:slim \
+		npm run pages
