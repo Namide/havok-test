@@ -41,7 +41,9 @@ export default async function createCard({
 
   // Render
   const map = await getCheckerTexture();
-  const material = new THREE.MeshLambertMaterial({
+  const material = new (
+    SHADOW ? THREE.MeshLambertMaterial : THREE.MeshBasicMaterial
+  )({
     map,
   });
   const geometry = new THREE.BoxGeometry(...size);

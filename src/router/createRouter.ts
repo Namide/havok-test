@@ -6,7 +6,7 @@ import { createEventEmitter } from "../events/createEventEmitter";
 export const createRouter = () => {
   const routes = [
     {
-      title: "Damien Doussaud",
+      title: "Havok - test",
       name: "landing",
       path: `${import.meta.env.BASE_URL}`,
       regex: new RegExp(`^${import.meta.env.BASE_URL.replace(/\//, "/")}$`),

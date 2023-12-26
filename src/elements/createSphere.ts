@@ -23,7 +23,9 @@ export default async function createSphere({
 
   // Render
   const map = await getCheckerTexture();
-  const material = new THREE.MeshLambertMaterial({
+  const material = new (
+    SHADOW ? THREE.MeshLambertMaterial : THREE.MeshBasicMaterial
+  )({
     map,
   });
   const geometry = new THREE.SphereGeometry(size);
