@@ -43,7 +43,7 @@ export const createApp = async () => {
   for (let i = 0; i < 10; i++) {
     const { mesh, update } = await createSphere({
       physicWorld,
-      position: [rand(1, -1), rand(2, -2), rand(1, -1)],
+      position: [rand(1, -1), rand(4, 2), rand(1, -1)],
       size: rand(0.2, 0.1),
     });
     renderWorld.scene.add(mesh);
@@ -66,7 +66,7 @@ export const createApp = async () => {
   for (let i = 0; i < 5; i++) {
     const { mesh: card, update } = await createCard({
       physicWorld,
-      position: [rand(1, -1), rand(2, -2), rand(1, -1)],
+      position: [rand(1, -1), rand(4, 2), rand(1, -1)],
       rotation: quaternion
         .setFromEuler(
           euler.set(rand(2 * Math.PI), rand(2 * Math.PI), rand(2 * Math.PI)),
